@@ -1,31 +1,27 @@
+import os
+import sqlite3
+
 from flask import Flask, request, session, render_template, redirect
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
-import sqlite3
 
 app = Flask(__name__)
 
-app.secret_key = "h&s-clothing-secret-key"
+app.secret_key = os.environ.get(
+    "SECRET_KEY",
+    "temporary-development-key"
+)
 
 CORS(app)
 
-
-# =========================
-# DATABASE
-# =========================
 
 def get_db():
     conn = sqlite3.connect("hs_clothing.db")
     conn.row_factory = sqlite3.Row
     return conn
-    
-    @app.route("/")
-def home():
-    return render_template("index.html")
 
 
 def create_database():
-
     conn = get_db()
 
     conn.execute("""
@@ -49,22 +45,13 @@ def create_database():
     """)
 
     conn.commit()
-
     conn.close()
 
-
-# =========================
-# WEBSITE
-# =========================
 
 @app.route("/")
 def home():
     return render_template("index.html")
 
-
-# =========================
-# ADMIN LOGIN
-# =========================
 
 @app.route("/admin-login")
 def admin_login_page():
@@ -73,7 +60,6 @@ def admin_login_page():
 
 @app.route("/admin")
 def admin():
-
     if "admin_id" not in session:
         return redirect("/admin-login")
 
@@ -82,7 +68,6 @@ def admin():
 
 @app.route("/api/admin/login", methods=["POST"])
 def admin_login():
-
     data = request.get_json()
 
     email = data.get("email", "").strip()
@@ -100,38 +85,25 @@ def admin_login():
     if admin is None:
         return {"error": "Invalid email or password"}, 401
 
-    if not check_password_hash(
-        admin["password_hash"],
-        password
-    ):
+    if not check_password_hash(admin["password_hash"], password):
         return {"error": "Invalid email or password"}, 401
 
     session["admin_id"] = admin["id"]
     session["admin_email"] = admin["email"]
 
-    return {
-        "message": "Login successful"
-    }, 200
+    return {"message": "Login successful"}, 200
 
 
 @app.route("/api/admin/logout", methods=["POST"])
 def admin_logout():
-
     session.pop("admin_id", None)
     session.pop("admin_email", None)
 
-    return {
-        "message": "Logged out successfully"
-    }, 200
+    return {"message": "Logged out successfully"}, 200
 
-
-# =========================
-# PRODUCTS - GET
-# =========================
 
 @app.route("/api/products", methods=["GET"])
 def products():
-
     conn = get_db()
 
     rows = conn.execute(
@@ -143,7 +115,6 @@ def products():
     product_list = []
 
     for row in rows:
-
         product_list.append({
             "id": row["id"],
             "name": row["name"],
@@ -152,18 +123,11 @@ def products():
             "style": row["style"]
         })
 
-    return {
-        "products": product_list
-    }
+    return {"products": product_list}
 
-
-# =========================
-# PRODUCTS - ADD
-# =========================
 
 @app.route("/api/products", methods=["POST"])
 def add_product():
-
     data = request.get_json()
 
     name = data.get("name", "").strip()
@@ -171,15 +135,11 @@ def add_product():
     price = data.get("price")
 
     if not name or not category or price is None:
-
-        return {
-            "error": "All fields are required"
-        }, 400
+        return {"error": "All fields are required"}, 400
 
     conn = get_db()
 
     try:
-
         conn.execute("""
             INSERT INTO products
             (name, price, category)
@@ -193,20 +153,12 @@ def add_product():
         conn.commit()
 
     finally:
-
         conn.close()
 
-    return {
-        "message": "Product added successfully"
-    }, 201
+    return {"message": "Product added successfully"}, 201
 
-
-# =========================
-# CREATE ADMIN
-# =========================
 
 def create_admin():
-
     conn = get_db()
 
     existing_admin = conn.execute(
@@ -235,14 +187,11 @@ def create_admin():
     conn.close()
 
 
-# =========================
-# START SERVER
-# =========================
-
 if __name__ == "__main__":
-
     create_database()
-
     create_admin()
 
-    app.run(debug=True)
+    app.run(
+        host="0.0.0.0",
+        port=10000
+    )
