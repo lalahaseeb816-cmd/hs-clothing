@@ -1,4 +1,3 @@
-```python
 from flask import Flask, render_template, jsonify, request
 from flask_cors import CORS
 import os
@@ -6,99 +5,95 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-# --------------------------------------------------
+# -----------------------------
 # PRODUCTS
-# --------------------------------------------------
+# -----------------------------
 
 products = [
     {
         "id": 1,
-        "name": "Black Luxury Suit",
+        "name": "Classic Black Suit",
         "category": "Men",
         "type": "Formal",
         "price": 4999,
-        "image": "https://images.unsplash.com/photo-1598808503746-f34c53b9323e?auto=format&fit=crop&w=800&q=85"
+        "image": "https://images.unsplash.com/photo-1598808503746-f34c53b9323e?auto=format&fit=crop&w=800&q=80"
     },
     {
         "id": 2,
-        "name": "Classic White Shirt",
+        "name": "Premium White Shirt",
         "category": "Men",
         "type": "Formal",
         "price": 1499,
-        "image": "https://images.unsplash.com/photo-1603252110481-7ba873bf42ab?auto=format&fit=crop&w=800&q=85"
+        "image": "https://images.unsplash.com/photo-1603252110481-7ba873bf42ab?auto=format&fit=crop&w=800&q=80"
     },
     {
         "id": 3,
-        "name": "Premium Black Dress",
+        "name": "Luxury Black Dress",
         "category": "Women",
         "type": "Formal",
-        "price": 2999,
-        "image": "https://images.unsplash.com/photo-1539008835657-9e8e9680c956?auto=format&fit=crop&w=800&q=85"
+        "price": 3999,
+        "image": "https://images.unsplash.com/photo-1566174053879-31528523f8ae?auto=format&fit=crop&w=800&q=80"
     },
     {
         "id": 4,
-        "name": "Luxury Blazer",
-        "category": "Men",
-        "type": "Formal",
-        "price": 3499,
-        "image": "https://images.unsplash.com/photo-1555069519-127aadedf1ee?auto=format&fit=crop&w=800&q=85"
-    },
-    {
-        "id": 5,
-        "name": "Urban Street Jacket",
-        "category": "Men",
-        "type": "Streetwear",
-        "price": 2299,
-        "image": "https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=800&q=85"
-    },
-    {
-        "id": 6,
-        "name": "Elegant Evening Dress",
-        "category": "Women",
-        "type": "Formal",
-        "price": 3299,
-        "image": "https://images.unsplash.com/photo-1566174053879-31528523f8ae?auto=format&fit=crop&w=800&q=85"
-    },
-    {
-        "id": 7,
-        "name": "Premium Denim Jacket",
+        "name": "Streetwear Hoodie",
         "category": "Men",
         "type": "Streetwear",
         "price": 1999,
-        "image": "https://images.unsplash.com/photo-1516826957135-700dedea698c?auto=format&fit=crop&w=800&q=85"
+        "image": "https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=800&q=80"
+    },
+    {
+        "id": 5,
+        "name": "Women's Casual Outfit",
+        "category": "Women",
+        "type": "Casual",
+        "price": 2499,
+        "image": "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=800&q=80"
+    },
+    {
+        "id": 6,
+        "name": "Premium Blazer",
+        "category": "Men",
+        "type": "Formal",
+        "price": 5499,
+        "image": "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80"
+    },
+    {
+        "id": 7,
+        "name": "Elegant Women's Dress",
+        "category": "Women",
+        "type": "Party",
+        "price": 3499,
+        "image": "https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&w=800&q=80"
     },
     {
         "id": 8,
-        "name": "Luxury Women's Blazer",
-        "category": "Women",
-        "type": "Formal",
-        "price": 2799,
-        "image": "https://images.unsplash.com/photo-1591369822096-ffd140ec948f?auto=format&fit=crop&w=800&q=85"
+        "name": "Urban Streetwear",
+        "category": "Men",
+        "type": "Streetwear",
+        "price": 2299,
+        "image": "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=800&q=80"
     }
 ]
 
 
-# --------------------------------------------------
+# -----------------------------
 # HOME PAGE
-# --------------------------------------------------
+# -----------------------------
 
 @app.route("/")
 def home():
     return render_template("index.html")
 
 
-# --------------------------------------------------
+# -----------------------------
 # PRODUCTS API
-# --------------------------------------------------
+# -----------------------------
 
 @app.route("/api/products", methods=["GET"])
 def get_products():
     return jsonify(products)
 
-
-# --------------------------------------------------
-# SINGLE PRODUCT
-# --------------------------------------------------
 
 @app.route("/api/products/<int:product_id>", methods=["GET"])
 def get_product(product_id):
@@ -108,17 +103,15 @@ def get_product(product_id):
         None
     )
 
-    if not product:
-        return jsonify({
-            "error": "Product not found"
-        }), 404
+    if product is None:
+        return jsonify({"error": "Product not found"}), 404
 
     return jsonify(product)
 
 
-# --------------------------------------------------
-# REGISTER
-# --------------------------------------------------
+# -----------------------------
+# USERS
+# -----------------------------
 
 users = []
 
@@ -129,10 +122,7 @@ def register():
     data = request.get_json()
 
     if not data:
-        return jsonify({
-            "success": False,
-            "message": "No data received"
-        }), 400
+        return jsonify({"error": "No data received"}), 400
 
     name = data.get("name")
     email = data.get("email")
@@ -140,20 +130,14 @@ def register():
 
     if not name or not email or not password:
         return jsonify({
-            "success": False,
-            "message": "Please fill all fields"
+            "error": "Name, email and password are required"
         }), 400
 
-    existing_user = next(
-        (user for user in users if user["email"] == email),
-        None
-    )
-
-    if existing_user:
-        return jsonify({
-            "success": False,
-            "message": "Email already registered"
-        }), 409
+    for user in users:
+        if user["email"] == email:
+            return jsonify({
+                "error": "Email already registered"
+            }), 400
 
     users.append({
         "name": name,
@@ -162,14 +146,9 @@ def register():
     })
 
     return jsonify({
-        "success": True,
         "message": "Registration successful"
-    })
+    }), 201
 
-
-# --------------------------------------------------
-# LOGIN
-# --------------------------------------------------
 
 @app.route("/api/login", methods=["POST"])
 def login():
@@ -177,42 +156,33 @@ def login():
     data = request.get_json()
 
     if not data:
-        return jsonify({
-            "success": False,
-            "message": "No data received"
-        }), 400
+        return jsonify({"error": "No data received"}), 400
 
     email = data.get("email")
     password = data.get("password")
 
-    user = next(
-        (
-            user for user in users
-            if user["email"] == email
-            and user["password"] == password
-        ),
-        None
-    )
+    for user in users:
 
-    if not user:
-        return jsonify({
-            "success": False,
-            "message": "Invalid email or password"
-        }), 401
+        if (
+            user["email"] == email
+            and user["password"] == password
+        ):
+            return jsonify({
+                "message": "Login successful",
+                "user": {
+                    "name": user["name"],
+                    "email": user["email"]
+                }
+            })
 
     return jsonify({
-        "success": True,
-        "message": "Login successful",
-        "user": {
-            "name": user["name"],
-            "email": user["email"]
-        }
-    })
+        "error": "Invalid email or password"
+    }), 401
 
 
-# --------------------------------------------------
+# -----------------------------
 # ORDERS
-# --------------------------------------------------
+# -----------------------------
 
 orders = []
 
@@ -224,40 +194,37 @@ def create_order():
 
     if not data:
         return jsonify({
-            "success": False,
-            "message": "No order data received"
+            "error": "No order data received"
         }), 400
 
     order = {
         "id": len(orders) + 1,
-        "customer": data.get("customer"),
-        "items": data.get("items", []),
-        "total": data.get("total", 0)
+        "data": data
     }
 
     orders.append(order)
 
     return jsonify({
-        "success": True,
         "message": "Order created successfully",
         "order": order
     }), 201
 
 
-# --------------------------------------------------
+# -----------------------------
 # HEALTH CHECK
-# --------------------------------------------------
+# -----------------------------
 
 @app.route("/health")
 def health():
+
     return jsonify({
         "status": "H&S Clothing backend is running"
     })
 
 
-# --------------------------------------------------
-# RUN SERVER
-# --------------------------------------------------
+# -----------------------------
+# START SERVER
+# -----------------------------
 
 if __name__ == "__main__":
 
@@ -268,4 +235,3 @@ if __name__ == "__main__":
         port=port,
         debug=False
     )
-```
