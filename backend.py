@@ -1,197 +1,271 @@
-import os
-import sqlite3
-
-from flask import Flask, request, session, render_template, redirect
+```python
+from flask import Flask, render_template, jsonify, request
 from flask_cors import CORS
-from werkzeug.security import generate_password_hash, check_password_hash
+import os
 
 app = Flask(__name__)
-
-app.secret_key = os.environ.get(
-    "SECRET_KEY",
-    "temporary-development-key"
-)
-
 CORS(app)
 
+# --------------------------------------------------
+# PRODUCTS
+# --------------------------------------------------
 
-def get_db():
-    conn = sqlite3.connect("hs_clothing.db")
-    conn.row_factory = sqlite3.Row
-    return conn
+products = [
+    {
+        "id": 1,
+        "name": "Black Luxury Suit",
+        "category": "Men",
+        "type": "Formal",
+        "price": 4999,
+        "image": "https://images.unsplash.com/photo-1598808503746-f34c53b9323e?auto=format&fit=crop&w=800&q=85"
+    },
+    {
+        "id": 2,
+        "name": "Classic White Shirt",
+        "category": "Men",
+        "type": "Formal",
+        "price": 1499,
+        "image": "https://images.unsplash.com/photo-1603252110481-7ba873bf42ab?auto=format&fit=crop&w=800&q=85"
+    },
+    {
+        "id": 3,
+        "name": "Premium Black Dress",
+        "category": "Women",
+        "type": "Formal",
+        "price": 2999,
+        "image": "https://images.unsplash.com/photo-1539008835657-9e8e9680c956?auto=format&fit=crop&w=800&q=85"
+    },
+    {
+        "id": 4,
+        "name": "Luxury Blazer",
+        "category": "Men",
+        "type": "Formal",
+        "price": 3499,
+        "image": "https://images.unsplash.com/photo-1555069519-127aadedf1ee?auto=format&fit=crop&w=800&q=85"
+    },
+    {
+        "id": 5,
+        "name": "Urban Street Jacket",
+        "category": "Men",
+        "type": "Streetwear",
+        "price": 2299,
+        "image": "https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=800&q=85"
+    },
+    {
+        "id": 6,
+        "name": "Elegant Evening Dress",
+        "category": "Women",
+        "type": "Formal",
+        "price": 3299,
+        "image": "https://images.unsplash.com/photo-1566174053879-31528523f8ae?auto=format&fit=crop&w=800&q=85"
+    },
+    {
+        "id": 7,
+        "name": "Premium Denim Jacket",
+        "category": "Men",
+        "type": "Streetwear",
+        "price": 1999,
+        "image": "https://images.unsplash.com/photo-1516826957135-700dedea698c?auto=format&fit=crop&w=800&q=85"
+    },
+    {
+        "id": 8,
+        "name": "Luxury Women's Blazer",
+        "category": "Women",
+        "type": "Formal",
+        "price": 2799,
+        "image": "https://images.unsplash.com/photo-1591369822096-ffd140ec948f?auto=format&fit=crop&w=800&q=85"
+    }
+]
 
 
-def create_database():
-    conn = get_db()
-
-    conn.execute("""
-        CREATE TABLE IF NOT EXISTS products (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            price REAL NOT NULL,
-            category TEXT NOT NULL,
-            style TEXT
-        )
-    """)
-
-    conn.execute("""
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            email TEXT UNIQUE NOT NULL,
-            password_hash TEXT NOT NULL,
-            is_admin INTEGER DEFAULT 0
-        )
-    """)
-
-    conn.commit()
-    conn.close()
-
+# --------------------------------------------------
+# HOME PAGE
+# --------------------------------------------------
 
 @app.route("/")
 def home():
     return render_template("index.html")
 
 
-@app.route("/admin-login")
-def admin_login_page():
-    return render_template("admin_login.html")
-
-
-@app.route("/admin")
-def admin():
-    if "admin_id" not in session:
-        return redirect("/admin-login")
-
-    return render_template("admin.html")
-
-
-@app.route("/api/admin/login", methods=["POST"])
-def admin_login():
-    data = request.get_json()
-
-    email = data.get("email", "").strip()
-    password = data.get("password", "")
-
-    conn = get_db()
-
-    admin = conn.execute(
-        "SELECT * FROM users WHERE email = ? AND is_admin = 1",
-        (email,)
-    ).fetchone()
-
-    conn.close()
-
-    if admin is None:
-        return {"error": "Invalid email or password"}, 401
-
-    if not check_password_hash(admin["password_hash"], password):
-        return {"error": "Invalid email or password"}, 401
-
-    session["admin_id"] = admin["id"]
-    session["admin_email"] = admin["email"]
-
-    return {"message": "Login successful"}, 200
-
-
-@app.route("/api/admin/logout", methods=["POST"])
-def admin_logout():
-    session.pop("admin_id", None)
-    session.pop("admin_email", None)
-
-    return {"message": "Logged out successfully"}, 200
-
+# --------------------------------------------------
+# PRODUCTS API
+# --------------------------------------------------
 
 @app.route("/api/products", methods=["GET"])
-def products():
-    conn = get_db()
-
-    rows = conn.execute(
-        "SELECT * FROM products"
-    ).fetchall()
-
-    conn.close()
-
-    product_list = []
-
-    for row in rows:
-        product_list.append({
-            "id": row["id"],
-            "name": row["name"],
-            "price": row["price"],
-            "category": row["category"],
-            "style": row["style"]
-        })
-
-    return {"products": product_list}
+def get_products():
+    return jsonify(products)
 
 
-@app.route("/api/products", methods=["POST"])
-def add_product():
+# --------------------------------------------------
+# SINGLE PRODUCT
+# --------------------------------------------------
+
+@app.route("/api/products/<int:product_id>", methods=["GET"])
+def get_product(product_id):
+
+    product = next(
+        (p for p in products if p["id"] == product_id),
+        None
+    )
+
+    if not product:
+        return jsonify({
+            "error": "Product not found"
+        }), 404
+
+    return jsonify(product)
+
+
+# --------------------------------------------------
+# REGISTER
+# --------------------------------------------------
+
+users = []
+
+
+@app.route("/api/register", methods=["POST"])
+def register():
+
     data = request.get_json()
 
-    name = data.get("name", "").strip()
-    category = data.get("category", "").strip()
-    price = data.get("price")
+    if not data:
+        return jsonify({
+            "success": False,
+            "message": "No data received"
+        }), 400
 
-    if not name or not category or price is None:
-        return {"error": "All fields are required"}, 400
+    name = data.get("name")
+    email = data.get("email")
+    password = data.get("password")
 
-    conn = get_db()
+    if not name or not email or not password:
+        return jsonify({
+            "success": False,
+            "message": "Please fill all fields"
+        }), 400
 
-    try:
-        conn.execute("""
-            INSERT INTO products
-            (name, price, category)
-            VALUES (?, ?, ?)
-        """, (
-            name,
-            float(price),
-            category
-        ))
+    existing_user = next(
+        (user for user in users if user["email"] == email),
+        None
+    )
 
-        conn.commit()
+    if existing_user:
+        return jsonify({
+            "success": False,
+            "message": "Email already registered"
+        }), 409
 
-    finally:
-        conn.close()
+    users.append({
+        "name": name,
+        "email": email,
+        "password": password
+    })
 
-    return {"message": "Product added successfully"}, 201
+    return jsonify({
+        "success": True,
+        "message": "Registration successful"
+    })
 
 
-def create_admin():
-    conn = get_db()
+# --------------------------------------------------
+# LOGIN
+# --------------------------------------------------
 
-    existing_admin = conn.execute(
-        "SELECT * FROM users WHERE email = ?",
-        ("admin@hsclothing.com",)
-    ).fetchone()
+@app.route("/api/login", methods=["POST"])
+def login():
 
-    if existing_admin is None:
+    data = request.get_json()
 
-        password_hash = generate_password_hash(
-            "Admin@12345"
-        )
+    if not data:
+        return jsonify({
+            "success": False,
+            "message": "No data received"
+        }), 400
 
-        conn.execute("""
-            INSERT INTO users
-            (name, email, password_hash, is_admin)
-            VALUES (?, ?, ?, 1)
-        """, (
-            "H&S Admin",
-            "admin@hsclothing.com",
-            password_hash
-        ))
+    email = data.get("email")
+    password = data.get("password")
 
-        conn.commit()
+    user = next(
+        (
+            user for user in users
+            if user["email"] == email
+            and user["password"] == password
+        ),
+        None
+    )
 
-    conn.close()
+    if not user:
+        return jsonify({
+            "success": False,
+            "message": "Invalid email or password"
+        }), 401
 
+    return jsonify({
+        "success": True,
+        "message": "Login successful",
+        "user": {
+            "name": user["name"],
+            "email": user["email"]
+        }
+    })
+
+
+# --------------------------------------------------
+# ORDERS
+# --------------------------------------------------
+
+orders = []
+
+
+@app.route("/api/orders", methods=["POST"])
+def create_order():
+
+    data = request.get_json()
+
+    if not data:
+        return jsonify({
+            "success": False,
+            "message": "No order data received"
+        }), 400
+
+    order = {
+        "id": len(orders) + 1,
+        "customer": data.get("customer"),
+        "items": data.get("items", []),
+        "total": data.get("total", 0)
+    }
+
+    orders.append(order)
+
+    return jsonify({
+        "success": True,
+        "message": "Order created successfully",
+        "order": order
+    }), 201
+
+
+# --------------------------------------------------
+# HEALTH CHECK
+# --------------------------------------------------
+
+@app.route("/health")
+def health():
+    return jsonify({
+        "status": "H&S Clothing backend is running"
+    })
+
+
+# --------------------------------------------------
+# RUN SERVER
+# --------------------------------------------------
 
 if __name__ == "__main__":
-    create_database()
-    create_admin()
+
+    port = int(os.environ.get("PORT", 5000))
 
     app.run(
         host="0.0.0.0",
-        port=10000
+        port=port,
+        debug=False
     )
+```
