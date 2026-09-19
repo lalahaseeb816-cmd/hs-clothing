@@ -1,15 +1,9 @@
 import os
 import sqlite3
+import json
 from functools import wraps
 
-from flask import (
-    Flask,
-    render_template,
-    jsonify,
-    request,
-    session,
-    redirect
-)
+from flask import Flask, render_template, jsonify, request, session, redirect
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -22,14 +16,19 @@ app = Flask(__name__)
 
 app.config["SECRET_KEY"] = os.environ.get(
     "SECRET_KEY",
-    "development-secret-change-this"
+    "HANDS-CLOTHING-SECRET-KEY-2026"
 )
 
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+
+# Same-origin Render deployment works with this.
+# Can be overridden with SESSION_COOKIE_SECURE=false if needed.
 app.config["SESSION_COOKIE_SECURE"] = (
     os.environ.get("SESSION_COOKIE_SECURE", "true").lower() == "true"
 )
+
+app.config["SESSION_COOKIE_NAME"] = "hands_clothing_session"
 
 CORS(
     app,
@@ -65,7 +64,6 @@ def init_database():
 
     db = get_db()
 
-    # Users
     db.execute("""
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -76,7 +74,6 @@ def init_database():
         )
     """)
 
-    # Products
     db.execute("""
         CREATE TABLE IF NOT EXISTS products (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -89,7 +86,6 @@ def init_database():
         )
     """)
 
-    # Orders
     db.execute("""
         CREATE TABLE IF NOT EXISTS orders (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -98,15 +94,12 @@ def init_database():
             total REAL DEFAULT 0,
             status TEXT DEFAULT 'Pending',
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-            FOREIGN KEY (user_id)
-            REFERENCES users(id)
+            FOREIGN KEY (user_id) REFERENCES users(id)
         )
     """)
 
     db.commit()
 
-    # Add initial products if database is empty
     product_count = db.execute(
         "SELECT COUNT(*) FROM products"
     ).fetchone()[0]
@@ -114,7 +107,6 @@ def init_database():
     if product_count == 0:
 
         initial_products = [
-
             (
                 "Classic Black Suit",
                 "Men",
@@ -122,7 +114,6 @@ def init_database():
                 4999,
                 "https://images.unsplash.com/photo-1598808503746-f34c53b9323e?auto=format&fit=crop&w=800&q=80"
             ),
-
             (
                 "Premium White Shirt",
                 "Men",
@@ -130,7 +121,6 @@ def init_database():
                 1499,
                 "https://images.unsplash.com/photo-1603252110481-7ba873bf42ab?auto=format&fit=crop&w=800&q=80"
             ),
-
             (
                 "Luxury Black Dress",
                 "Women",
@@ -138,7 +128,6 @@ def init_database():
                 3999,
                 "https://images.unsplash.com/photo-1566174053879-31528523f8ae?auto=format&fit=crop&w=800&q=80"
             ),
-
             (
                 "Streetwear Hoodie",
                 "Men",
@@ -146,7 +135,6 @@ def init_database():
                 1999,
                 "https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=800&q=80"
             ),
-
             (
                 "Women's Casual Outfit",
                 "Women",
@@ -154,7 +142,6 @@ def init_database():
                 2499,
                 "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=800&q=80"
             ),
-
             (
                 "Premium Blazer",
                 "Men",
@@ -162,7 +149,6 @@ def init_database():
                 5499,
                 "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80"
             ),
-
             (
                 "Elegant Women's Dress",
                 "Women",
@@ -170,7 +156,6 @@ def init_database():
                 3499,
                 "https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&w=800&q=80"
             ),
-
             (
                 "Urban Streetwear",
                 "Men",
@@ -178,7 +163,6 @@ def init_database():
                 2299,
                 "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=800&q=80"
             )
-
         ]
 
         db.executemany("""
@@ -201,9 +185,9 @@ def admin_required(function):
     @wraps(function)
     def decorated_function(*args, **kwargs):
 
-        if not session.get("admin_logged_in"):
-
+        if session.get("admin_logged_in") is not True:
             return jsonify({
+                "success": False,
                 "error": "Admin authentication required"
             }), 401
 
@@ -222,8 +206,8 @@ def user_required(function):
     def decorated_function(*args, **kwargs):
 
         if not session.get("user_id"):
-
             return jsonify({
+                "success": False,
                 "error": "Login required"
             }), 401
 
@@ -233,12 +217,11 @@ def user_required(function):
 
 
 # ============================================================
-# HOME PAGE
+# HOME
 # ============================================================
 
 @app.route("/")
 def home():
-
     return render_template("index.html")
 
 
@@ -247,8 +230,8 @@ def home():
 # ============================================================
 
 @app.route("/admin-login")
+@app.route("/admin/login")
 def admin_login_page():
-
     return render_template("admin-login.html")
 
 
@@ -257,10 +240,10 @@ def admin_login_page():
 # ============================================================
 
 @app.route("/admin")
+@app.route("/admin/")
 def admin_dashboard():
 
     if not session.get("admin_logged_in"):
-
         return redirect("/admin-login")
 
     return render_template("admin.html")
@@ -276,36 +259,53 @@ def admin_login():
     data = request.get_json(silent=True)
 
     if not data:
+        data = request.form.to_dict()
 
+    if not data:
         return jsonify({
-            "error": "No data received"
+            "success": False,
+            "error": "No login data received"
         }), 400
 
+    # Accept username OR email.
     username = str(
-        data.get("username", "")
-    ).strip()
+        data.get("username")
+        or data.get("email")
+        or data.get("admin_username")
+        or ""
+    ).strip().lower()
 
     password = str(
-        data.get("password", "")
+        data.get("password")
+        or data.get("admin_password")
+        or ""
     )
 
-    if (
-        username != ADMIN_USERNAME
-        or password != ADMIN_PASSWORD
-    ):
+    # Exact credentials.
+    valid_username = username == ADMIN_USERNAME.lower()
+    valid_password = password == ADMIN_PASSWORD
 
+    if not valid_username or not valid_password:
         return jsonify({
+            "success": False,
             "error": "Invalid admin username or password"
         }), 401
 
+    # Start a completely fresh admin session.
     session.clear()
 
     session["admin_logged_in"] = True
     session["admin_username"] = ADMIN_USERNAME
 
+    session.permanent = True
+
     return jsonify({
-        "message": "Admin login successful"
-    })
+        "success": True,
+        "message": "Admin login successful",
+        "admin": {
+            "username": ADMIN_USERNAME
+        }
+    }), 200
 
 
 # ============================================================
@@ -315,35 +315,36 @@ def admin_login():
 @app.route("/api/admin/logout", methods=["POST"])
 def admin_logout():
 
-    session.pop("admin_logged_in", None)
-    session.pop("admin_username", None)
+    session.clear()
 
     return jsonify({
-        "message": "Admin logged out"
+        "success": True,
+        "message": "Admin logged out successfully"
     })
 
 
 # ============================================================
-# CHECK ADMIN SESSION
+# ADMIN SESSION
 # ============================================================
 
-@app.route("/api/admin/me")
+@app.route("/api/admin/me", methods=["GET"])
 def admin_me():
 
-    if not session.get("admin_logged_in"):
-
+    if session.get("admin_logged_in") is not True:
         return jsonify({
+            "success": False,
             "logged_in": False
         }), 401
 
     return jsonify({
+        "success": True,
         "logged_in": True,
         "username": session.get("admin_username")
-    })
+    }), 200
 
 
 # ============================================================
-# PRODUCTS - GET
+# PRODUCTS - GET ALL
 # ============================================================
 
 @app.route("/api/products", methods=["GET"])
@@ -366,10 +367,8 @@ def get_products():
     db.close()
 
     return jsonify({
-        "products": [
-            dict(row)
-            for row in rows
-        ]
+        "success": True,
+        "products": [dict(row) for row in rows]
     })
 
 
@@ -397,12 +396,15 @@ def get_product(product_id):
     db.close()
 
     if row is None:
-
         return jsonify({
+            "success": False,
             "error": "Product not found"
         }), 404
 
-    return jsonify(dict(row))
+    return jsonify({
+        "success": True,
+        "product": dict(row)
+    })
 
 
 # ============================================================
@@ -416,48 +418,36 @@ def add_product():
     data = request.get_json(silent=True)
 
     if not data:
+        data = request.form.to_dict()
 
+    if not data:
         return jsonify({
+            "success": False,
             "error": "No product data received"
         }), 400
 
-    name = str(
-        data.get("name", "")
-    ).strip()
-
-    category = str(
-        data.get("category", "")
-    ).strip()
-
-    product_type = str(
-        data.get("type", "")
-    ).strip()
-
-    image = str(
-        data.get("image", "")
-    ).strip()
+    name = str(data.get("name", "")).strip()
+    category = str(data.get("category", "")).strip()
+    product_type = str(data.get("type", "")).strip()
+    image = str(data.get("image", "")).strip()
 
     try:
-
-        price = float(
-            data.get("price")
-        )
-
+        price = float(data.get("price"))
     except (TypeError, ValueError):
-
         return jsonify({
+            "success": False,
             "error": "Invalid price"
         }), 400
 
     if not name or not category:
-
         return jsonify({
+            "success": False,
             "error": "Product name and category are required"
         }), 400
 
     if price < 0:
-
         return jsonify({
+            "success": False,
             "error": "Price cannot be negative"
         }), 400
 
@@ -482,6 +472,7 @@ def add_product():
     db.close()
 
     return jsonify({
+        "success": True,
         "message": "Product added successfully",
         "product": {
             "id": product_id,
@@ -498,50 +489,44 @@ def add_product():
 # ADMIN - UPDATE PRODUCT
 # ============================================================
 
-@app.route("/api/products/<int:product_id>", methods=["PUT"])
+@app.route("/api/products/<int:product_id>", methods=["PUT", "PATCH"])
 @admin_required
 def update_product(product_id):
 
     data = request.get_json(silent=True)
 
     if not data:
+        data = request.form.to_dict()
 
+    if not data:
         return jsonify({
+            "success": False,
             "error": "No product data received"
         }), 400
 
-    name = str(
-        data.get("name", "")
-    ).strip()
-
-    category = str(
-        data.get("category", "")
-    ).strip()
-
-    product_type = str(
-        data.get("type", "")
-    ).strip()
-
-    image = str(
-        data.get("image", "")
-    ).strip()
+    name = str(data.get("name", "")).strip()
+    category = str(data.get("category", "")).strip()
+    product_type = str(data.get("type", "")).strip()
+    image = str(data.get("image", "")).strip()
 
     try:
-
-        price = float(
-            data.get("price")
-        )
-
+        price = float(data.get("price"))
     except (TypeError, ValueError):
-
         return jsonify({
+            "success": False,
             "error": "Invalid price"
         }), 400
 
     if not name or not category:
-
         return jsonify({
+            "success": False,
             "error": "Name and category are required"
+        }), 400
+
+    if price < 0:
+        return jsonify({
+            "success": False,
+            "error": "Price cannot be negative"
         }), 400
 
     db = get_db()
@@ -552,10 +537,9 @@ def update_product(product_id):
     ).fetchone()
 
     if existing is None:
-
         db.close()
-
         return jsonify({
+            "success": False,
             "error": "Product not found"
         }), 404
 
@@ -581,6 +565,7 @@ def update_product(product_id):
     db.close()
 
     return jsonify({
+        "success": True,
         "message": "Product updated successfully"
     })
 
@@ -607,12 +592,13 @@ def delete_product(product_id):
     db.close()
 
     if deleted == 0:
-
         return jsonify({
+            "success": False,
             "error": "Product not found"
         }), 404
 
     return jsonify({
+        "success": True,
         "message": "Product deleted successfully"
     })
 
@@ -627,32 +613,27 @@ def register():
     data = request.get_json(silent=True)
 
     if not data:
+        data = request.form.to_dict()
 
+    if not data:
         return jsonify({
+            "success": False,
             "error": "No data received"
         }), 400
 
-    name = str(
-        data.get("name", "")
-    ).strip()
-
-    email = str(
-        data.get("email", "")
-    ).strip().lower()
-
-    password = str(
-        data.get("password", "")
-    )
+    name = str(data.get("name", "")).strip()
+    email = str(data.get("email", "")).strip().lower()
+    password = str(data.get("password", ""))
 
     if not name or not email or not password:
-
         return jsonify({
+            "success": False,
             "error": "Name, email and password are required"
         }), 400
 
     if len(password) < 8:
-
         return jsonify({
+            "success": False,
             "error": "Password must contain at least 8 characters"
         }), 400
 
@@ -664,10 +645,9 @@ def register():
     ).fetchone()
 
     if existing:
-
         db.close()
-
         return jsonify({
+            "success": False,
             "error": "Email already registered"
         }), 409
 
@@ -696,6 +676,7 @@ def register():
     session["user_email"] = email
 
     return jsonify({
+        "success": True,
         "message": "Registration successful",
         "user": {
             "id": user_id,
@@ -715,18 +696,16 @@ def login():
     data = request.get_json(silent=True)
 
     if not data:
+        data = request.form.to_dict()
 
+    if not data:
         return jsonify({
+            "success": False,
             "error": "No data received"
         }), 400
 
-    email = str(
-        data.get("email", "")
-    ).strip().lower()
-
-    password = str(
-        data.get("password", "")
-    )
+    email = str(data.get("email", "")).strip().lower()
+    password = str(data.get("password", ""))
 
     db = get_db()
 
@@ -743,17 +722,14 @@ def login():
     db.close()
 
     if not user:
-
         return jsonify({
+            "success": False,
             "error": "Invalid email or password"
         }), 401
 
-    if not check_password_hash(
-        user["password"],
-        password
-    ):
-
+    if not check_password_hash(user["password"], password):
         return jsonify({
+            "success": False,
             "error": "Invalid email or password"
         }), 401
 
@@ -764,6 +740,7 @@ def login():
     session["user_email"] = user["email"]
 
     return jsonify({
+        "success": True,
         "message": "Login successful",
         "user": {
             "id": user["id"],
@@ -783,6 +760,7 @@ def logout():
     session.clear()
 
     return jsonify({
+        "success": True,
         "message": "Logged out successfully"
     })
 
@@ -791,16 +769,17 @@ def logout():
 # CURRENT CUSTOMER
 # ============================================================
 
-@app.route("/api/me")
+@app.route("/api/me", methods=["GET"])
 def current_user():
 
     if not session.get("user_id"):
-
         return jsonify({
+            "success": False,
             "logged_in": False
         }), 401
 
     return jsonify({
+        "success": True,
         "logged_in": True,
         "user": {
             "id": session.get("user_id"),
@@ -821,23 +800,21 @@ def create_order():
     data = request.get_json(silent=True)
 
     if not data:
-
         return jsonify({
+            "success": False,
             "error": "No order data received"
         }), 400
 
-    order_data = str(
-        data.get("order_data", data)
-    )
+    raw_order_data = data.get("order_data", data)
+
+    if isinstance(raw_order_data, (dict, list)):
+        order_data = json.dumps(raw_order_data)
+    else:
+        order_data = str(raw_order_data)
 
     try:
-
-        total = float(
-            data.get("total", 0)
-        )
-
+        total = float(data.get("total", 0))
     except (TypeError, ValueError):
-
         total = 0
 
     db = get_db()
@@ -859,6 +836,7 @@ def create_order():
     db.close()
 
     return jsonify({
+        "success": True,
         "message": "Order created successfully",
         "order_id": order_id
     }), 201
@@ -868,7 +846,7 @@ def create_order():
 # CUSTOMER ORDERS
 # ============================================================
 
-@app.route("/api/my-orders")
+@app.route("/api/my-orders", methods=["GET"])
 @user_required
 def my_orders():
 
@@ -891,10 +869,8 @@ def my_orders():
     db.close()
 
     return jsonify({
-        "orders": [
-            dict(row)
-            for row in rows
-        ]
+        "success": True,
+        "orders": [dict(row) for row in rows]
     })
 
 
@@ -902,7 +878,7 @@ def my_orders():
 # ADMIN - ORDERS
 # ============================================================
 
-@app.route("/api/admin/orders")
+@app.route("/api/admin/orders", methods=["GET"])
 @admin_required
 def admin_orders():
 
@@ -926,10 +902,8 @@ def admin_orders():
     db.close()
 
     return jsonify({
-        "orders": [
-            dict(row)
-            for row in rows
-        ]
+        "success": True,
+        "orders": [dict(row) for row in rows]
     })
 
 
@@ -937,7 +911,7 @@ def admin_orders():
 # ADMIN - CUSTOMERS
 # ============================================================
 
-@app.route("/api/admin/customers")
+@app.route("/api/admin/customers", methods=["GET"])
 @admin_required
 def admin_customers():
 
@@ -956,10 +930,8 @@ def admin_customers():
     db.close()
 
     return jsonify({
-        "customers": [
-            dict(row)
-            for row in rows
-        ]
+        "success": True,
+        "customers": [dict(row) for row in rows]
     })
 
 
@@ -967,7 +939,7 @@ def admin_customers():
 # ADMIN - DASHBOARD STATISTICS
 # ============================================================
 
-@app.route("/api/admin/stats")
+@app.route("/api/admin/stats", methods=["GET"])
 @admin_required
 def admin_stats():
 
@@ -992,6 +964,7 @@ def admin_stats():
     db.close()
 
     return jsonify({
+        "success": True,
         "products": products_count,
         "customers": customers_count,
         "orders": orders_count,
@@ -1003,10 +976,11 @@ def admin_stats():
 # HEALTH CHECK
 # ============================================================
 
-@app.route("/health")
+@app.route("/health", methods=["GET"])
 def health():
 
     return jsonify({
+        "success": True,
         "status": "H&S Clothing backend is running"
     })
 
@@ -1019,6 +993,7 @@ def health():
 def not_found(error):
 
     return jsonify({
+        "success": False,
         "error": "Route not found"
     }), 404
 
@@ -1027,6 +1002,7 @@ def not_found(error):
 def server_error(error):
 
     return jsonify({
+        "success": False,
         "error": "Internal server error"
     }), 500
 
@@ -1052,4 +1028,17 @@ if __name__ == "__main__":
         host="0.0.0.0",
         port=port,
         debug=False
-            )
+    )
+
+After replacing it, commit/push the file and wait for Render to show “Deploy succeeded.”
+
+Then open:
+
+https://hands-clothing.onrender.com/admin-login
+
+Use exactly:
+
+Username: "lalahaseeb@816gmail.com"
+Password: "Haseeb12000"
+
+Then tap Login.
