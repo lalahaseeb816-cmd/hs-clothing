@@ -81,6 +81,11 @@
             border: none;
             padding: 10px 20px;
             cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .logout:hover {
+            background: #333;
         }
 
         /* STATS */
@@ -110,7 +115,7 @@
             font-weight: bold;
         }
 
-        /* CONTENT */
+        /* SECTIONS */
 
         .section {
             background: white;
@@ -122,6 +127,8 @@
         .section h2 {
             margin-bottom: 20px;
         }
+
+        /* TABLE */
 
         table {
             width: 100%;
@@ -137,6 +144,42 @@
 
         th {
             background: #f5f5f5;
+        }
+
+        /* FORM */
+
+        #addProductForm {
+            display: grid;
+            gap: 15px;
+            max-width: 500px;
+        }
+
+        #addProductForm input {
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 15px;
+        }
+
+        #addProductForm button {
+            padding: 12px;
+            background: #111;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        #addProductForm button:hover {
+            background: #333;
+        }
+
+        /* MESSAGE */
+
+        #message {
+            margin-top: 15px;
+            font-weight: bold;
         }
 
         /* RESPONSIVE */
@@ -166,10 +209,21 @@
 
             .main {
                 margin-left: 0;
+                padding: 15px;
             }
 
             .stats {
                 grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            table {
+                font-size: 13px;
             }
         }
     </style>
@@ -205,7 +259,7 @@
     </div>
 
 
-    <!-- MAIN CONTENT -->
+    <!-- MAIN -->
 
     <div class="main">
 
@@ -213,9 +267,9 @@
 
             <h1>Admin Dashboard</h1>
 
-           <button class="logout" onclick="logoutAdmin()">
-    Logout
-</button>
+            <button class="logout" onclick="logoutAdmin()">
+                Logout
+            </button>
 
         </div>
 
@@ -249,7 +303,7 @@
             </div>
 
 
-            <!-- PRODUCTS -->
+            <!-- PRODUCT TABLE -->
 
             <div class="section">
 
@@ -269,7 +323,6 @@
                     </thead>
 
                     <tbody id="productsTable">
-
                     </tbody>
 
                 </table>
@@ -279,45 +332,48 @@
         </div>
 
 
-        <!-- PRODUCTS SECTION -->
+        <!-- PRODUCTS -->
 
         <div id="products" class="section" style="display:none;">
 
-    <h2>Manage Products</h2>
+            <h2>Manage Products</h2>
 
-    <form id="addProductForm">
+            <form id="addProductForm">
 
-        <input
-            type="text"
-            id="productName"
-            placeholder="Product Name"
-            required
-        >
+                <input
+                    type="text"
+                    id="productName"
+                    placeholder="Product Name"
+                    required
+                >
 
-        <input
-            type="text"
-            id="productCategory"
-            placeholder="Category"
-            required
-        >
+                <input
+                    type="text"
+                    id="productCategory"
+                    placeholder="Category"
+                    required
+                >
 
-        <input
-            type="number"
-            id="productPrice"
-            placeholder="Price"
-            required
-        >
+                <input
+                    type="number"
+                    id="productPrice"
+                    placeholder="Price"
+                    min="0"
+                    required
+                >
 
-        <button type="submit">
-            Add Product
-        </button>
+                <button type="submit">
+                    Add Product
+                </button>
 
-    </form>
+            </form>
 
-</div>
+            <p id="message"></p>
+
+        </div>
 
 
-        <!-- ORDERS SECTION -->
+        <!-- ORDERS -->
 
         <div id="orders" class="section" style="display:none;">
 
@@ -330,7 +386,7 @@
         </div>
 
 
-        <!-- CUSTOMERS SECTION -->
+        <!-- CUSTOMERS -->
 
         <div id="customers" class="section" style="display:none;">
 
@@ -347,400 +403,1085 @@
 
     <script>
 
-const API = "http://127.0.0.1:5000";
+        /*
+         * IMPORTANT:
+         * We are using the same server for the frontend and Flask API.
+         *
+         * This avoids:
+         * http://127.0.0.1:5000
+         *
+         * which only works on your own computer.
+         */
 
-async function loadProducts() {
-
-    try {
-
-        const response = await fetch(
-            API + "/api/products"
-        );
-
-        const data = await response.json();
-
-        const products = data.products;
-
-        document.getElementById("productCount").textContent =
-            products.length;
-
-        const table =
-            document.getElementById("productsTable");
-
-        table.innerHTML = "";
-
-        products.forEach(product => {
-
-            table.innerHTML += `
-                <tr>
-                    <td>${product.id}</td>
-                    <td>${product.name}</td>
-                    <td>${product.category}</td>
-                    <td>₹${product.price}</td>
-                </tr>
-            `;
-
-        });
-
-    } catch (error) {
-
-        console.error("Could not load products:", error);
-
-    }
-}
+        const API = "";
 
 
-function showSection(section) {
+        /* ==============================
+           LOAD PRODUCTS
+        ============================== */
 
-    document.getElementById("dashboard").style.display = "none";
-    document.getElementById("products").style.display = "none";
-    document.getElementById("orders").style.display = "none";
-    document.getElementById("customers").style.display = "none";
+        async function loadProducts() {
 
-    document.getElementById(section).style.display = "block";
-}
+            try {
 
+                const response = await fetch(
+                    API + "/api/products",
+                    {
+                        method: "GET",
+                        credentials: "include"
+                    }
+                );
 
-async function logoutAdmin() {
+                if (!response.ok) {
+                    throw new Error("Failed to load products");
+                }
 
-    try {
+                const data = await response.json();
 
-        await fetch("/api/admin/logout", {
-            method: "POST"
-        });
+                const products = data.products || [];
 
-        window.location.href = "/admin-login";
+                document.getElementById("productCount").textContent =
+                    products.length;
 
-    } catch (error) {
+                const table =
+                    document.getElementById("productsTable");
 
-        console.error("Logout failed:", error);
+                table.innerHTML = "";
 
-    }
-}
+                products.forEach(product => {
 
-document.getElementById("addProductForm").addEventListener("submit", async function(event) {
+                    table.innerHTML += `
+                        <tr>
+                            <td>${product.id}</td>
+                            <td>${escapeHTML(product.name)}</td>
+                            <td>${escapeHTML(product.category)}</td>
+                            <td>₹${product.price}</td>
+                        </tr>
+                    `;
 
-    event.preventDefault();
+                });
 
-    const name = document.getElementById("productName").value;
-    const category = document.getElementById("productCategory").value;
-    const price = document.getElementById("productPrice").value;
+            } catch (error) {
 
-    try {
+                console.error(
+                    "Could not load products:",
+                    error
+                );
 
-        const response = await fetch(
-            API + "/api/products",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    name: name,
-                    category: category,
-                    price: price
-                })
             }
-        );
-
-        const data = await response.json();
-
-        if (response.ok) {
-
-            alert("Product added successfully!");
-
-            document.getElementById("addProductForm").reset();
-
-            loadProducts();
-
-        } else {
-
-            alert(data.error || "Could not add product");
 
         }
 
-    } catch (error) {
 
-        console.error(error);
+        /* ==============================
+           ESCAPE HTML
+        ============================== */
 
-        alert("Something went wrong");
+        function escapeHTML(value) {
 
-    }
-
-});
-
-
-document.getElementById("addProductForm").addEventListener("submit", async function(event) {
-
-    event.preventDefault();
-
-    const name = document.getElementById("productName").value;
-    const category = document.getElementById("productCategory").value;
-    const price = document.getElementById("productPrice").value;
-
-    try {
-
-        const response = await fetch(
-            API + "/api/products",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    name: name,
-                    category: category,
-                    price: price
-                })
+            if (value === null || value === undefined) {
+                return "";
             }
-        );
 
-        const data = await response.json();
-
-        if (response.ok) {
-
-            alert("Product added successfully!");
-
-            document.getElementById("addProductForm").reset();
-
-            loadProducts();
-
-        } else {
-
-            alert(data.error || "Could not add product");
+            return String(value)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
 
         }
 
-    } catch (error) {
 
-        console.error(error);
+        /* =============================<!DOCTYPE html>
+<html lang="en">
 
-        alert("Something went wrong");
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    }
+    <title>H&S Clothing | Admin Dashboard</title>
 
-});
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
 
+        body {
+            background: #f5f5f5;
+            color: #111;
+        }
 
-document.getElementById("addProductForm").addEventListener("submit", async function(event) {
+        /* SIDEBAR */
 
-    event.preventDefault();
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 240px;
+            height: 100vh;
+            background: #111;
+            color: white;
+            padding: 30px 20px;
+        }
 
-    const name = document.getElementById("productName").value;
-    const category = document.getElementById("productCategory").value;
-    const price = document.getElementById("productPrice").value;
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 40px;
+            text-align: center;
+        }
 
-    try {
+        .sidebar button {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 10px;
+            background: transparent;
+            color: white;
+            border: none;
+            text-align: left;
+            cursor: pointer;
+            font-size: 15px;
+            border-radius: 5px;
+        }
 
-        const response = await fetch(
-            API + "/api/products",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    name: name,
-                    category: category,
-                    price: price
-                })
+        .sidebar button:hover {
+            background: #333;
+        }
+
+        /* MAIN */
+
+        .main {
+            margin-left: 240px;
+            padding: 30px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 30px;
+        }
+
+        .logout {
+            background: #111;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .logout:hover {
+            background: #333;
+        }
+
+        /* STATS */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .card h3 {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        /* SECTIONS */
+
+        .section {
+            background: white;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+        }
+
+        .section h2 {
+            margin-bottom: 20px;
+        }
+
+        /* TABLE */
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 14px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #f5f5f5;
+        }
+
+        /* FORM */
+
+        #addProductForm {
+            display: grid;
+            gap: 15px;
+            max-width: 500px;
+        }
+
+        #addProductForm input {
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 15px;
+        }
+
+        #addProductForm button {
+            padding: 12px;
+            background: #111;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        #addProductForm button:hover {
+            background: #333;
+        }
+
+        /* MESSAGE */
+
+        #message {
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 900px) {
+
+            .sidebar {
+                width: 180px;
             }
-        );
 
-        const data = await response.json();
+            .main {
+                margin-left: 180px;
+            }
 
-        if (response.ok) {
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
 
-            alert("Product added successfully!");
+        @media (max-width: 600px) {
 
-            document.getElementById("addProductForm").reset();
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
 
-            loadProducts();
+            .main {
+                margin-left: 0;
+                padding: 15px;
+            }
 
-        } else {
+            .stats {
+                grid-template-columns: 1fr;
+            }
 
-            alert(data.error || "Could not add product");
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            table {
+                font-size: 13px;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+
+    <div class="sidebar">
+
+        <div class="logo">
+            H&S CLOTHING
+        </div>
+
+        <button onclick="showSection('dashboard')">
+            📊 Dashboard
+        </button>
+
+        <button onclick="showSection('products')">
+            👕 Products
+        </button>
+
+        <button onclick="showSection('orders')">
+            📦 Orders
+        </button>
+
+        <button onclick="showSection('customers')">
+            👤 Customers
+        </button>
+
+    </div>
+
+
+    <!-- MAIN -->
+
+    <div class="main">
+
+        <div class="header">
+
+            <h1>Admin Dashboard</h1>
+
+            <button class="logout" onclick="logoutAdmin()">
+                Logout
+            </button>
+
+        </div>
+
+
+        <!-- DASHBOARD -->
+
+        <div id="dashboard">
+
+            <div class="stats">
+
+                <div class="card">
+                    <h3>Total Products</h3>
+                    <p id="productCount">0</p>
+                </div>
+
+                <div class="card">
+                    <h3>Total Orders</h3>
+                    <p id="orderCount">0</p>
+                </div>
+
+                <div class="card">
+                    <h3>Total Customers</h3>
+                    <p id="customerCount">0</p>
+                </div>
+
+                <div class="card">
+                    <h3>Total Sales</h3>
+                    <p id="salesTotal">₹0</p>
+                </div>
+
+            </div>
+
+
+            <!-- PRODUCT TABLE -->
+
+            <div class="section">
+
+                <h2>Products</h2>
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>ID</th>
+                            <th>Product</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="productsTable">
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <!-- PRODUCTS -->
+
+        <div id="products" class="section" style="display:none;">
+
+            <h2>Manage Products</h2>
+
+            <form id="addProductForm">
+
+                <input
+                    type="text"
+                    id="productName"
+                    placeholder="Product Name"
+                    required
+                >
+
+                <input
+                    type="text"
+                    id="productCategory"
+                    placeholder="Category"
+                    required
+                >
+
+                <input
+                    type="number"
+                    id="productPrice"
+                    placeholder="Price"
+                    min="0"
+                    required
+                >
+
+                <button type="submit">
+                    Add Product
+                </button>
+
+            </form>
+
+            <p id="message"></p>
+
+        </div>
+
+
+        <!-- ORDERS -->
+
+        <div id="orders" class="section" style="display:none;">
+
+            <h2>Orders</h2>
+
+            <p>
+                Orders from your H&S Clothing website will appear here.
+            </p>
+
+        </div>
+
+
+        <!-- CUSTOMERS -->
+
+        <div id="customers" class="section" style="display:none;">
+
+            <h2>Customers</h2>
+
+            <p>
+                Registered customers will appear here.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        /*
+         * IMPORTANT:
+         * We are using the same server for the frontend and Flask API.
+         *
+         * This avoids:
+         * http://127.0.0.1:5000
+         *
+         * which only works on your own computer.
+         */
+
+        const API = "";
+
+
+        /* ==============================
+           LOAD PRODUCTS
+        ============================== */
+
+        async function loadProducts() {
+
+            try {
+
+                const response = await fetch(
+                    API + "/api/products",
+                    {
+                        method: "GET",
+                        credentials: "include"
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error("Failed to load products");
+                }
+
+                const data = await response.json();
+
+                const products = data.products || [];
+
+                document.getElementById("productCount").textContent =
+                    products.length;
+
+                const table =
+                    document.getElementById("productsTable");
+
+                table.innerHTML = "";
+
+                products.forEach(product => {
+
+                    table.innerHTML += `
+                        <tr>
+                            <td>${product.id}</td>
+                            <td>${escapeHTML(product.name)}</td>
+                            <td>${escapeHTML(product.category)}</td>
+                            <td>₹${product.price}</td>
+                        </tr>
+                    `;
+
+                });
+
+            } catch (error) {
+
+                console.error(
+                    "Could not load products:",
+                    error
+                );
+
+            }
 
         }
 
-    } catch (error) {
 
-        console.error(error);
+        /* ==============================
+           ESCAPE HTML
+        ============================== */
 
-        alert("Something went wrong");
+        function escapeHTML(value) {
 
-    }
-
-});
-
-document.getElementById("addProductForm").addEventListener("submit", async function(event) {
-
-    event.preventDefault();
-
-    const name = document.getElementById("productName").value;
-    const category = document.getElementById("productCategory").value;
-    const price = document.getElementById("productPrice").value;
-
-    try {
-
-        const response = await fetch(
-            API + "/api/products",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    name: name,
-                    category: category,
-                    price: price
-                })
+            if (value === null || value === undefined) {
+                return "";
             }
-        );
 
-        const data = await response.json();
-
-        if (response.ok) {
-
-            alert("Product added successfully!");
-
-            document.getElementById("addProductForm").reset();
-
-            loadProducts();
-
-        } else {
-
-            alert(data.error || "Could not add product");
+            return String(value)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
 
         }
 
-    } catch (error) {
 
-        console.error(error);
+        /* =============================<!DOCTYPE html>
+<html lang="en">
 
-        alert("Something went wrong");
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    }
+    <title>H&S Clothing | Admin Dashboard</title>
 
-});
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
 
-document.getElementById("addProductForm").addEventListener("submit", async function(event) {
+        body {
+            background: #f5f5f5;
+            color: #111;
+        }
 
-    event.preventDefault();
+        /* SIDEBAR */
 
-    const name = document.getElementById("productName").value;
-    const category = document.getElementById("productCategory").value;
-    const price = document.getElementById("productPrice").value;
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 240px;
+            height: 100vh;
+            background: #111;
+            color: white;
+            padding: 30px 20px;
+        }
 
-    try {
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 40px;
+            text-align: center;
+        }
 
-        const response = await fetch(
-            API + "/api/products",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    name: name,
-                    category: category,
-                    price: price
-                })
+        .sidebar button {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 10px;
+            background: transparent;
+            color: white;
+            border: none;
+            text-align: left;
+            cursor: pointer;
+            font-size: 15px;
+            border-radius: 5px;
+        }
+
+        .sidebar button:hover {
+            background: #333;
+        }
+
+        /* MAIN */
+
+        .main {
+            margin-left: 240px;
+            padding: 30px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 30px;
+        }
+
+        .logout {
+            background: #111;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .logout:hover {
+            background: #333;
+        }
+
+        /* STATS */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .card h3 {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        /* SECTIONS */
+
+        .section {
+            background: white;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+        }
+
+        .section h2 {
+            margin-bottom: 20px;
+        }
+
+        /* TABLE */
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 14px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #f5f5f5;
+        }
+
+        /* FORM */
+
+        #addProductForm {
+            display: grid;
+            gap: 15px;
+            max-width: 500px;
+        }
+
+        #addProductForm input {
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 15px;
+        }
+
+        #addProductForm button {
+            padding: 12px;
+            background: #111;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        #addProductForm button:hover {
+            background: #333;
+        }
+
+        /* MESSAGE */
+
+        #message {
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 900px) {
+
+            .sidebar {
+                width: 180px;
             }
-        );
 
-        const data = await response.json();
+            .main {
+                margin-left: 180px;
+            }
 
-        if (response.ok) {
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
 
-            alert("Product added successfully!");
+        @media (max-width: 600px) {
 
-            document.getElementById("addProductForm").reset();
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
 
-            loadProducts();
+            .main {
+                margin-left: 0;
+                padding: 15px;
+            }
 
-        } else {
+            .stats {
+                grid-template-columns: 1fr;
+            }
 
-            alert(data.error || "Could not add product");
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            table {
+                font-size: 13px;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+
+    <div class="sidebar">
+
+        <div class="logo">
+            H&S CLOTHING
+        </div>
+
+        <button onclick="showSection('dashboard')">
+            📊 Dashboard
+        </button>
+
+        <button onclick="showSection('products')">
+            👕 Products
+        </button>
+
+        <button onclick="showSection('orders')">
+            📦 Orders
+        </button>
+
+        <button onclick="showSection('customers')">
+            👤 Customers
+        </button>
+
+    </div>
+
+
+    <!-- MAIN -->
+
+    <div class="main">
+
+        <div class="header">
+
+            <h1>Admin Dashboard</h1>
+
+            <button class="logout" onclick="logoutAdmin()">
+                Logout
+            </button>
+
+        </div>
+
+
+        <!-- DASHBOARD -->
+
+        <div id="dashboard">
+
+            <div class="stats">
+
+                <div class="card">
+                    <h3>Total Products</h3>
+                    <p id="productCount">0</p>
+                </div>
+
+                <div class="card">
+                    <h3>Total Orders</h3>
+                    <p id="orderCount">0</p>
+                </div>
+
+                <div class="card">
+                    <h3>Total Customers</h3>
+                    <p id="customerCount">0</p>
+                </div>
+
+                <div class="card">
+                    <h3>Total Sales</h3>
+                    <p id="salesTotal">₹0</p>
+                </div>
+
+            </div>
+
+
+            <!-- PRODUCT TABLE -->
+
+            <div class="section">
+
+                <h2>Products</h2>
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>ID</th>
+                            <th>Product</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="productsTable">
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <!-- PRODUCTS -->
+
+        <div id="products" class="section" style="display:none;">
+
+            <h2>Manage Products</h2>
+
+            <form id="addProductForm">
+
+                <input
+                    type="text"
+                    id="productName"
+                    placeholder="Product Name"
+                    required
+                >
+
+                <input
+                    type="text"
+                    id="productCategory"
+                    placeholder="Category"
+                    required
+                >
+
+                <input
+                    type="number"
+                    id="productPrice"
+                    placeholder="Price"
+                    min="0"
+                    required
+                >
+
+                <button type="submit">
+                    Add Product
+                </button>
+
+            </form>
+
+            <p id="message"></p>
+
+        </div>
+
+
+        <!-- ORDERS -->
+
+        <div id="orders" class="section" style="display:none;">
+
+            <h2>Orders</h2>
+
+            <p>
+                Orders from your H&S Clothing website will appear here.
+            </p>
+
+        </div>
+
+
+        <!-- CUSTOMERS -->
+
+        <div id="customers" class="section" style="display:none;">
+
+            <h2>Customers</h2>
+
+            <p>
+                Registered customers will appear here.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        /*
+         * IMPORTANT:
+         * We are using the same server for the frontend and Flask API.
+         *
+         * This avoids:
+         * http://127.0.0.1:5000
+         *
+         * which only works on your own computer.
+         */
+
+        const API = "";
+
+
+        /* ==============================
+           LOAD PRODUCTS
+        ============================== */
+
+        async function loadProducts() {
+
+            try {
+
+                const response = await fetch(
+                    API + "/api/products",
+                    {
+                        method: "GET",
+                        credentials: "include"
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error("Failed to load products");
+                }
+
+                const data = await response.json();
+
+                const products = data.products || [];
+
+                document.getElementById("productCount").textContent =
+                    products.length;
+
+                const table =
+                    document.getElementById("productsTable");
+
+                table.innerHTML = "";
+
+                products.forEach(product => {
+
+                    table.innerHTML += `
+                        <tr>
+                            <td>${product.id}</td>
+                            <td>${escapeHTML(product.name)}</td>
+                            <td>${escapeHTML(product.category)}</td>
+                            <td>₹${product.price}</td>
+                        </tr>
+                    `;
+
+                });
+
+            } catch (error) {
+
+                console.error(
+                    "Could not load products:",
+                    error
+                );
+
+            }
 
         }
 
-    } catch (error) {
 
-        console.error(error);
+        /* ==============================
+           ESCAPE HTML
+        ============================== */
 
-        alert("Something went wrong");
+        function escapeHTML(value) {
 
-    }
-
-});
-
-
-loadProducts();
-
-</script>
-Important
-
-You should keep everything above loadProducts(); that we already added.
-
-So the very bottom should finish like:
-
-// Add Product code here
-
-loadProducts();
-
-document.getElementById("addProductForm").addEventListener("submit", async function(event) {
-
-    event.preventDefault();
-
-    const name = document.getElementById("productName").value;
-    const category = document.getElementById("productCategory").value;
-    const price = document.getElementById("productPrice").value;
-
-    try {
-
-        const response = await fetch(
-            API + "/api/products",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    name: name,
-                    category: category,
-                    price: price
-                })
+            if (value === null || value === undefined) {
+                return "";
             }
-        );
 
-        const data = await response.json();
-
-        if (response.ok) {
-
-            alert("Product added successfully!");
-
-            document.getElementById("addProductForm").reset();
-
-            loadProducts();
-
-        } else {
-
-            alert(data.error || "Could not add product");
+            return String(value)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
 
         }
 
-    } catch (error) {
 
-        console.error(error);
-
-        alert("Something went wrong");
-
-    }
-
-});
-</script>
-
-</body>
-
-</html>
+        /* =============================
+        
