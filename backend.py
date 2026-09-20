@@ -1,6 +1,7 @@
 import os
 import sqlite3
 import uuid
+import json
 from functools import wraps
 
 from flask import (
@@ -12,6 +13,7 @@ from flask import (
     redirect,
     send_from_directory
 )
+
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 
@@ -29,14 +31,20 @@ app.config["SECRET_KEY"] = os.environ.get(
 
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+
 app.config["SESSION_COOKIE_SECURE"] = (
-    os.environ.get("SESSION_COOKIE_SECURE", "true").lower() == "true"
+    os.environ.get(
+        "SESSION_COOKIE_SECURE",
+        "true"
+    ).lower() == "true"
 )
 
-# Maximum upload size: 8 MB
 app.config["MAX_CONTENT_LENGTH"] = 8 * 1024 * 1024
 
-CORS(app, supports_credentials=True)
+CORS(
+    app,
+    supports_credentials=True
+)
 
 
 # ============================================================
@@ -58,36 +66,63 @@ ADMIN_PASSWORD = os.environ.get(
 # DATABASE
 # ============================================================
 
+BASE_DIR = os.path.dirname(
+    os.path.abspath(__file__)
+)
+
+DEFAULT_DATABASE = os.path.join(
+    BASE_DIR,
+    "hands_clothing.db"
+)
+
 DATABASE = os.environ.get(
     "DATABASE_PATH",
-    "hands_clothing.db"
+    DEFAULT_DATABASE
 )
 
 
 def get_db():
-    db = sqlite3.connect(DATABASE)
+
+    db = sqlite3.connect(
+        DATABASE,
+        timeout=30
+    )
+
     db.row_factory = sqlite3.Row
+
     return db
 
 
-def column_exists(db, table, column):
+def column_exists(
+    db,
+    table,
+    column
+):
+
     columns = db.execute(
         f"PRAGMA table_info({table})"
     ).fetchall()
 
-    return any(row["name"] == column for row in columns)
+    return any(
+        row["name"] == column
+        for row in columns
+    )
 
 
 # ============================================================
-# IMAGE UPLOAD CONFIGURATION
+# IMAGE UPLOAD CONFIG
 # ============================================================
 
 UPLOAD_FOLDER = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)),
+    BASE_DIR,
     "uploads"
 )
 
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(
+    UPLOAD_FOLDER,
+    exist_ok=True
+)
+
 
 ALLOWED_EXTENSIONS = {
     "jpg",
@@ -99,10 +134,17 @@ ALLOWED_EXTENSIONS = {
 
 
 def allowed_file(filename):
-    if not filename or "." not in filename:
+
+    if not filename:
         return False
 
-    extension = filename.rsplit(".", 1)[1].lower()
+    if "." not in filename:
+        return False
+
+    extension = filename.rsplit(
+        ".",
+        1
+    )[1].lower()
 
     return extension in ALLOWED_EXTENSIONS
 
@@ -115,57 +157,111 @@ def init_database():
 
     db = get_db()
 
+    # --------------------------------------------------------
     # USERS
+    # --------------------------------------------------------
+
     db.execute("""
         CREATE TABLE IF NOT EXISTS users (
+
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+
             name TEXT NOT NULL,
+
             email TEXT UNIQUE NOT NULL,
+
             password TEXT NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+            created_at
+            TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
         )
     """)
 
+    # --------------------------------------------------------
     # PRODUCTS
+    # --------------------------------------------------------
+
     db.execute("""
         CREATE TABLE IF NOT EXISTS products (
+
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+
             name TEXT NOT NULL,
+
             category TEXT NOT NULL,
+
             type TEXT,
+
             price REAL NOT NULL,
+
             image TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+            created_at
+            TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
         )
     """)
 
+    # --------------------------------------------------------
     # ORDERS
+    # --------------------------------------------------------
+
     db.execute("""
         CREATE TABLE IF NOT EXISTS orders (
+
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+
             user_id INTEGER,
+
             order_data TEXT NOT NULL,
+
             total REAL DEFAULT 0,
+
             status TEXT DEFAULT 'Pending',
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (user_id) REFERENCES users(id)
+
+            created_at
+            TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+            FOREIGN KEY (user_id)
+            REFERENCES users(id)
+
         )
     """)
 
-    # Add extra product fields
-    if not column_exists(db, "products", "celebrity"):
-        db.execute(
-            "ALTER TABLE products ADD COLUMN celebrity TEXT DEFAULT ''"
-        )
+    # --------------------------------------------------------
+    # PRODUCT EXTRA COLUMNS
+    # --------------------------------------------------------
 
-    if not column_exists(db, "products", "stock"):
-        db.execute(
-            "ALTER TABLE products ADD COLUMN stock INTEGER DEFAULT 10"
-        )
+    if not column_exists(
+        db,
+        "products",
+        "celebrity"
+    ):
+
+        db.execute("""
+            ALTER TABLE products
+            ADD COLUMN celebrity TEXT DEFAULT ''
+        """)
+
+    if not column_exists(
+        db,
+        "products",
+        "stock"
+    ):
+
+        db.execute("""
+            ALTER TABLE products
+            ADD COLUMN stock INTEGER DEFAULT 10
+        """)
 
     db.commit()
 
-    # Seed products only when empty
+    # --------------------------------------------------------
+    # SEED PRODUCTS
+    # ONLY IF DATABASE HAS ZERO PRODUCTS
+    # --------------------------------------------------------
+
     count = db.execute(
         "SELECT COUNT(*) FROM products"
     ).fetchone()[0]
@@ -258,7 +354,16 @@ def init_database():
 
         db.executemany("""
             INSERT INTO products
-            (name, category, type, price, image, celebrity, stock)
+            (
+                name,
+                category,
+                type,
+                price,
+                image,
+                celebrity,
+                stock
+            )
+
             VALUES (?, ?, ?, ?, ?, ?, ?)
         """, products)
 
@@ -276,14 +381,19 @@ def admin_required(function):
     @wraps(function)
     def wrapper(*args, **kwargs):
 
-        if not session.get("admin_logged_in"):
+        if not session.get(
+            "admin_logged_in"
+        ):
 
             return jsonify({
                 "success": False,
                 "message": "Admin login required"
             }), 401
 
-        return function(*args, **kwargs)
+        return function(
+            *args,
+            **kwargs
+        )
 
     return wrapper
 
@@ -295,32 +405,50 @@ def admin_required(function):
 @app.route("/")
 def home():
 
-    return render_template("index.html")
+    return render_template(
+        "index.html"
+    )
 
 
 @app.route("/admin-login")
 def admin_login_page():
 
-    if session.get("admin_logged_in"):
-        return redirect("/admin")
+    if session.get(
+        "admin_logged_in"
+    ):
 
-    return render_template("admin-login.html")
+        return redirect(
+            "/admin"
+        )
+
+    return render_template(
+        "admin-login.html"
+    )
 
 
 @app.route("/admin")
 def admin_page():
 
-    if not session.get("admin_logged_in"):
-        return redirect("/admin-login")
+    if not session.get(
+        "admin_logged_in"
+    ):
 
-    return render_template("admin.html")
+        return redirect(
+            "/admin-login"
+        )
+
+    return render_template(
+        "admin.html"
+    )
 
 
 # ============================================================
 # UPLOADED IMAGE ROUTE
 # ============================================================
 
-@app.route("/uploads/<path:filename>")
+@app.route(
+    "/uploads/<path:filename>"
+)
 def uploaded_file(filename):
 
     return send_from_directory(
@@ -330,31 +458,51 @@ def uploaded_file(filename):
 
 
 # ============================================================
-# ADMIN LOGIN API
+# ADMIN LOGIN
 # ============================================================
 
-@app.route("/api/admin/login", methods=["POST"])
+@app.route(
+    "/api/admin/login",
+    methods=["POST"]
+)
 def admin_login():
 
-    data = request.get_json(silent=True) or {}
+    data = (
+        request.get_json(
+            silent=True
+        )
+        or {}
+    )
 
     username = str(
-        data.get("username", "")
+        data.get(
+            "username",
+            ""
+        )
     ).strip()
 
     password = str(
-        data.get("password", "")
+        data.get(
+            "password",
+            ""
+        )
     )
 
     if (
         username == ADMIN_USERNAME
-        and password == ADMIN_PASSWORD
+        and
+        password == ADMIN_PASSWORD
     ):
 
         session.clear()
 
-        session["admin_logged_in"] = True
-        session["admin_username"] = username
+        session[
+            "admin_logged_in"
+        ] = True
+
+        session[
+            "admin_username"
+        ] = username
 
         return jsonify({
             "success": True,
@@ -367,15 +515,27 @@ def admin_login():
     }), 401
 
 
-@app.route("/api/admin/me", methods=["GET"])
+# ============================================================
+# ADMIN ME
+# ============================================================
+
+@app.route(
+    "/api/admin/me",
+    methods=["GET"]
+)
 def admin_me():
 
-    if session.get("admin_logged_in"):
+    if session.get(
+        "admin_logged_in"
+    ):
 
         return jsonify({
             "success": True,
             "logged_in": True,
-            "username": session.get("admin_username")
+            "username":
+                session.get(
+                    "admin_username"
+                )
         })
 
     return jsonify({
@@ -384,7 +544,14 @@ def admin_me():
     })
 
 
-@app.route("/api/admin/logout", methods=["POST"])
+# ============================================================
+# ADMIN LOGOUT
+# ============================================================
+
+@app.route(
+    "/api/admin/logout",
+    methods=["POST"]
+)
 def admin_logout():
 
     session.clear()
@@ -396,37 +563,65 @@ def admin_logout():
 
 
 # ============================================================
-# PRODUCT HELPERS
+# PRODUCT HELPER
 # ============================================================
 
 def product_to_dict(row):
 
     return {
-        "id": row["id"],
-        "name": row["name"],
-        "category": row["category"],
-        "type": row["type"] or "",
-        "price": float(row["price"]),
-        "image": row["image"] or "",
-        "celebrity": (
-            row["celebrity"]
-            if "celebrity" in row.keys()
-            else ""
+
+        "id": int(
+            row["id"]
         ),
-        "stock": (
-            int(row["stock"])
-            if "stock" in row.keys()
-            else 0
-        ),
-        "created_at": row["created_at"]
+
+        "name":
+            row["name"],
+
+        "category":
+            row["category"],
+
+        "type":
+            row["type"] or "",
+
+        "price":
+            float(
+                row["price"]
+            ),
+
+        "image":
+            row["image"] or "",
+
+        "celebrity":
+            (
+                row["celebrity"]
+                if "celebrity"
+                in row.keys()
+                else ""
+            ),
+
+        "stock":
+            (
+                int(
+                    row["stock"]
+                )
+                if "stock"
+                in row.keys()
+                else 0
+            ),
+
+        "created_at":
+            row["created_at"]
     }
 
 
 # ============================================================
-# PUBLIC PRODUCTS API
+# PUBLIC PRODUCTS
 # ============================================================
 
-@app.route("/api/products", methods=["GET"])
+@app.route(
+    "/api/products",
+    methods=["GET"]
+)
 def get_products():
 
     db = get_db()
@@ -437,26 +632,45 @@ def get_products():
         ORDER BY id DESC
     """).fetchall()
 
+    products = [
+        product_to_dict(row)
+        for row in rows
+    ]
+
     db.close()
 
     return jsonify({
+
         "success": True,
-        "products": [
-            product_to_dict(row)
-            for row in rows
-        ]
+
+        "count":
+            len(products),
+
+        "products":
+            products
+
     })
 
 
-@app.route("/api/products/<int:product_id>", methods=["GET"])
+# ============================================================
+# SINGLE PRODUCT
+# ============================================================
+
+@app.route(
+    "/api/products/<int:product_id>",
+    methods=["GET"]
+)
 def get_product(product_id):
 
     db = get_db()
 
-    row = db.execute(
-        "SELECT * FROM products WHERE id = ?",
-        (product_id,)
-    ).fetchone()
+    row = db.execute("""
+        SELECT *
+        FROM products
+        WHERE id = ?
+    """, (
+        product_id,
+    )).fetchone()
 
     db.close()
 
@@ -468,16 +682,23 @@ def get_product(product_id):
         }), 404
 
     return jsonify({
+
         "success": True,
-        "product": product_to_dict(row)
+
+        "product":
+            product_to_dict(row)
+
     })
 
 
 # ============================================================
-# IMAGE UPLOAD API
+# IMAGE UPLOAD
 # ============================================================
 
-@app.route("/api/upload-image", methods=["POST"])
+@app.route(
+    "/api/upload-image",
+    methods=["POST"]
+)
 @admin_required
 def upload_image():
 
@@ -488,23 +709,30 @@ def upload_image():
             "message": "No image file selected"
         }), 400
 
-    file = request.files["image"]
+    file = request.files[
+        "image"
+    ]
 
-    if not file or file.filename == "":
+    if (
+        not file
+        or
+        file.filename == ""
+    ):
 
         return jsonify({
             "success": False,
             "message": "Please select an image"
         }), 400
 
-    if not allowed_file(file.filename):
+    if not allowed_file(
+        file.filename
+    ):
 
         return jsonify({
             "success": False,
-            "message": (
+            "message":
                 "Invalid image format. "
                 "Use JPG, JPEG, PNG, WEBP or GIF."
-            )
         }), 400
 
     original_name = secure_filename(
@@ -527,186 +755,359 @@ def upload_image():
         unique_name
     )
 
-    file.save(save_path)
+    file.save(
+        save_path
+    )
 
-    image_url = "/uploads/" + unique_name
+    image_url = (
+        "/uploads/"
+        + unique_name
+    )
 
     return jsonify({
+
         "success": True,
-        "message": "Image uploaded successfully",
-        "image": image_url
+
+        "message":
+            "Image uploaded successfully",
+
+        "image":
+            image_url
+
     })
 
 
 # ============================================================
-# ADMIN PRODUCT CREATE
+# CREATE PRODUCT
 # ============================================================
 
-@app.route("/api/products", methods=["POST"])
+@app.route(
+    "/api/products",
+    methods=["POST"]
+)
 @admin_required
 def create_product():
 
-    data = request.get_json(silent=True) or {}
+    data = (
+        request.get_json(
+            silent=True
+        )
+        or {}
+    )
 
     name = str(
-        data.get("name", "")
+        data.get(
+            "name",
+            ""
+        )
     ).strip()
 
     category = str(
-        data.get("category", "Men")
+        data.get(
+            "category",
+            "Men"
+        )
     ).strip()
 
     product_type = str(
-        data.get("type", "General")
+        data.get(
+            "type",
+            "General"
+        )
     ).strip()
 
     image = str(
-        data.get("image", "")
+        data.get(
+            "image",
+            ""
+        )
     ).strip()
 
     celebrity = str(
-        data.get("celebrity", "")
+        data.get(
+            "celebrity",
+            ""
+        )
     ).strip()
 
     try:
 
         price = float(
-            data.get("price", 0)
+            data.get(
+                "price",
+                0
+            )
         )
 
         stock = int(
-            data.get("stock", 10)
+            data.get(
+                "stock",
+                10
+            )
         )
 
-    except (TypeError, ValueError):
+    except (
+        TypeError,
+        ValueError
+    ):
 
         return jsonify({
             "success": False,
-            "message": "Price and stock must be valid numbers"
+            "message":
+                "Price and stock must be valid numbers"
         }), 400
 
     if not name:
 
         return jsonify({
             "success": False,
-            "message": "Product name is required"
+            "message":
+                "Product name is required"
         }), 400
 
     if price < 0:
 
         return jsonify({
             "success": False,
-            "message": "Price cannot be negative"
+            "message":
+                "Price cannot be negative"
         }), 400
 
     if stock < 0:
 
         return jsonify({
             "success": False,
-            "message": "Stock cannot be negative"
+            "message":
+                "Stock cannot be negative"
         }), 400
 
     db = get_db()
 
-    cursor = db.execute("""
-        INSERT INTO products
-        (name, category, type, price, image, celebrity, stock)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-    """, (
-        name,
-        category,
-        product_type,
-        price,
-        image,
-        celebrity,
-        stock
-    ))
+    try:
 
-    db.commit()
+        cursor = db.execute("""
+            INSERT INTO products
+            (
+                name,
+                category,
+                type,
+                price,
+                image,
+                celebrity,
+                stock
+            )
 
-    product_id = cursor.lastrowid
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        """, (
+            name,
+            category,
+            product_type,
+            price,
+            image,
+            celebrity,
+            stock
+        ))
 
-    row = db.execute(
-        "SELECT * FROM products WHERE id = ?",
-        (product_id,)
-    ).fetchone()
+        db.commit()
+
+        product_id = cursor.lastrowid
+
+        row = db.execute("""
+            SELECT *
+            FROM products
+            WHERE id = ?
+        """, (
+            product_id,
+        )).fetchone()
+
+        product = product_to_dict(
+            row
+        )
+
+        # Verify the product really exists
+        verify_count = db.execute(
+            "SELECT COUNT(*) FROM products"
+        ).fetchone()[0]
+
+        db.close()
+
+        return jsonify({
+
+            "success": True,
+
+            "message":
+                "Product added successfully",
+
+            "product":
+                product,
+
+            "total_products":
+                verify_count
+
+        }), 201
+
+    except Exception as error:
+
+        db.rollback()
+        db.close()
+
+        return jsonify({
+
+            "success": False,
+
+            "message":
+                "Could not save product",
+
+            "error":
+                str(error)
+
+        }), 500
+
+
+# ============================================================
+# ADMIN PRODUCT LIST
+# ============================================================
+
+@app.route(
+    "/api/admin/products",
+    methods=["GET"]
+)
+@admin_required
+def admin_products():
+
+    db = get_db()
+
+    rows = db.execute("""
+        SELECT *
+        FROM products
+        ORDER BY id DESC
+    """).fetchall()
+
+    products = [
+        product_to_dict(row)
+        for row in rows
+    ]
 
     db.close()
 
     return jsonify({
+
         "success": True,
-        "message": "Product added successfully",
-        "product": product_to_dict(row)
-    }), 201
+
+        "count":
+            len(products),
+
+        "products":
+            products
+
+    })
 
 
 # ============================================================
-# ADMIN PRODUCT UPDATE
+# UPDATE PRODUCT
 # ============================================================
 
-@app.route("/api/products/<int:product_id>", methods=["PUT"])
+@app.route(
+    "/api/products/<int:product_id>",
+    methods=["PUT"]
+)
 @admin_required
 def update_product(product_id):
 
-    data = request.get_json(silent=True) or {}
+    data = (
+        request.get_json(
+            silent=True
+        )
+        or {}
+    )
 
     name = str(
-        data.get("name", "")
+        data.get(
+            "name",
+            ""
+        )
     ).strip()
 
     category = str(
-        data.get("category", "Men")
+        data.get(
+            "category",
+            "Men"
+        )
     ).strip()
 
     product_type = str(
-        data.get("type", "General")
+        data.get(
+            "type",
+            "General"
+        )
     ).strip()
 
     image = str(
-        data.get("image", "")
+        data.get(
+            "image",
+            ""
+        )
     ).strip()
 
     celebrity = str(
-        data.get("celebrity", "")
+        data.get(
+            "celebrity",
+            ""
+        )
     ).strip()
 
     try:
 
         price = float(
-            data.get("price", 0)
+            data.get(
+                "price",
+                0
+            )
         )
 
         stock = int(
-            data.get("stock", 10)
+            data.get(
+                "stock",
+                10
+            )
         )
 
-    except (TypeError, ValueError):
+    except (
+        TypeError,
+        ValueError
+    ):
 
         return jsonify({
             "success": False,
-            "message": "Price and stock must be valid numbers"
+            "message":
+                "Price and stock must be valid numbers"
         }), 400
 
     if not name:
 
         return jsonify({
             "success": False,
-            "message": "Product name is required"
+            "message":
+                "Product name is required"
         }), 400
 
     if price < 0 or stock < 0:
 
         return jsonify({
             "success": False,
-            "message": "Price and stock cannot be negative"
+            "message":
+                "Price and stock cannot be negative"
         }), 400
 
     db = get_db()
 
-    existing = db.execute(
-        "SELECT * FROM products WHERE id = ?",
-        (product_id,)
-    ).fetchone()
+    existing = db.execute("""
+        SELECT *
+        FROM products
+        WHERE id = ?
+    """, (
+        product_id,
+    )).fetchone()
 
     if not existing:
 
@@ -714,18 +1115,22 @@ def update_product(product_id):
 
         return jsonify({
             "success": False,
-            "message": "Product not found"
+            "message":
+                "Product not found"
         }), 404
 
     db.execute("""
         UPDATE products
-        SET name = ?,
+
+        SET
+            name = ?,
             category = ?,
             type = ?,
             price = ?,
             image = ?,
             celebrity = ?,
             stock = ?
+
         WHERE id = ?
     """, (
         name,
@@ -740,34 +1145,53 @@ def update_product(product_id):
 
     db.commit()
 
-    row = db.execute(
-        "SELECT * FROM products WHERE id = ?",
-        (product_id,)
-    ).fetchone()
+    row = db.execute("""
+        SELECT *
+        FROM products
+        WHERE id = ?
+    """, (
+        product_id,
+    )).fetchone()
+
+    product = product_to_dict(
+        row
+    )
 
     db.close()
 
     return jsonify({
+
         "success": True,
-        "message": "Product updated successfully",
-        "product": product_to_dict(row)
+
+        "message":
+            "Product updated successfully",
+
+        "product":
+            product
+
     })
 
 
 # ============================================================
-# ADMIN PRODUCT DELETE
+# DELETE PRODUCT
 # ============================================================
 
-@app.route("/api/products/<int:product_id>", methods=["DELETE"])
+@app.route(
+    "/api/products/<int:product_id>",
+    methods=["DELETE"]
+)
 @admin_required
 def delete_product(product_id):
 
     db = get_db()
 
-    existing = db.execute(
-        "SELECT image FROM products WHERE id = ?",
-        (product_id,)
-    ).fetchone()
+    existing = db.execute("""
+        SELECT image
+        FROM products
+        WHERE id = ?
+    """, (
+        product_id,
+    )).fetchone()
 
     if not existing:
 
@@ -775,22 +1199,33 @@ def delete_product(product_id):
 
         return jsonify({
             "success": False,
-            "message": "Product not found"
+            "message":
+                "Product not found"
         }), 404
 
-    image = existing["image"]
+    image = existing[
+        "image"
+    ]
 
-    db.execute(
-        "DELETE FROM products WHERE id = ?",
-        (product_id,)
-    )
+    db.execute("""
+        DELETE FROM products
+        WHERE id = ?
+    """, (
+        product_id,
+    ))
 
     db.commit()
 
     db.close()
 
-    # Delete uploaded image if it belongs to our uploads folder
-    if image and image.startswith("/uploads/"):
+    # Delete local uploaded image
+    if (
+        image
+        and
+        image.startswith(
+            "/uploads/"
+        )
+    ):
 
         filename = image.replace(
             "/uploads/",
@@ -798,31 +1233,45 @@ def delete_product(product_id):
             1
         )
 
-        filename = os.path.basename(filename)
+        filename = os.path.basename(
+            filename
+        )
 
         image_path = os.path.join(
             UPLOAD_FOLDER,
             filename
         )
 
-        if os.path.isfile(image_path):
+        if os.path.isfile(
+            image_path
+        ):
 
             try:
-                os.remove(image_path)
+                os.remove(
+                    image_path
+                )
+
             except OSError:
                 pass
 
     return jsonify({
+
         "success": True,
-        "message": "Product deleted successfully"
+
+        "message":
+            "Product deleted successfully"
+
     })
 
 
 # ============================================================
-# ADMIN DASHBOARD STATS
+# ADMIN STATS
 # ============================================================
 
-@app.route("/api/admin/stats", methods=["GET"])
+@app.route(
+    "/api/admin/stats",
+    methods=["GET"]
+)
 @admin_required
 def admin_stats():
 
@@ -841,19 +1290,38 @@ def admin_stats():
     ).fetchone()[0]
 
     sales = db.execute(
-        "SELECT COALESCE(SUM(total), 0) FROM orders"
+        """
+        SELECT COALESCE(
+            SUM(total),
+            0
+        )
+        FROM orders
+        """
     ).fetchone()[0]
 
     db.close()
 
     return jsonify({
+
         "success": True,
+
         "stats": {
-            "products": product_count,
-            "orders": order_count,
-            "customers": customer_count,
-            "sales": float(sales or 0)
+
+            "products":
+                product_count,
+
+            "orders":
+                order_count,
+
+            "customers":
+                customer_count,
+
+            "sales":
+                float(
+                    sales or 0
+                )
         }
+
     })
 
 
@@ -861,7 +1329,10 @@ def admin_stats():
 # ADMIN ORDERS
 # ============================================================
 
-@app.route("/api/admin/orders", methods=["GET"])
+@app.route(
+    "/api/admin/orders",
+    methods=["GET"]
+)
 @admin_required
 def admin_orders():
 
@@ -869,16 +1340,26 @@ def admin_orders():
 
     rows = db.execute("""
         SELECT
+
             orders.id,
+
             orders.order_data,
+
             orders.total,
+
             orders.status,
+
             orders.created_at,
+
             users.name AS customer_name,
+
             users.email AS customer_email
+
         FROM orders
+
         LEFT JOIN users
-            ON orders.user_id = users.id
+        ON orders.user_id = users.id
+
         ORDER BY orders.id DESC
     """).fetchall()
 
@@ -889,29 +1370,43 @@ def admin_orders():
     for row in rows:
 
         orders.append({
-            "id": row["id"],
-            "customer_name": (
+
+            "id":
+                row["id"],
+
+            "customer_name":
                 row["customer_name"]
-                or "Guest"
-            ),
-            "customer_email": (
+                or "Guest",
+
+            "customer_email":
                 row["customer_email"]
-                or "N/A"
-            ),
-            "total": float(
-                row["total"] or 0
-            ),
-            "status": (
+                or "N/A",
+
+            "total":
+                float(
+                    row["total"]
+                    or 0
+                ),
+
+            "status":
                 row["status"]
-                or "Pending"
-            ),
-            "created_at": row["created_at"],
-            "order_data": row["order_data"]
+                or "Pending",
+
+            "created_at":
+                row["created_at"],
+
+            "order_data":
+                row["order_data"]
+
         })
 
     return jsonify({
+
         "success": True,
-        "orders": orders
+
+        "orders":
+            orders
+
     })
 
 
@@ -919,7 +1414,10 @@ def admin_orders():
 # ADMIN CUSTOMERS
 # ============================================================
 
-@app.route("/api/admin/customers", methods=["GET"])
+@app.route(
+    "/api/admin/customers",
+    methods=["GET"]
+)
 @admin_required
 def admin_customers():
 
@@ -931,7 +1429,9 @@ def admin_customers():
             name,
             email,
             created_at
+
         FROM users
+
         ORDER BY id DESC
     """).fetchall()
 
@@ -942,15 +1442,28 @@ def admin_customers():
     for row in rows:
 
         customers.append({
-            "id": row["id"],
-            "name": row["name"],
-            "email": row["email"],
-            "created_at": row["created_at"]
+
+            "id":
+                row["id"],
+
+            "name":
+                row["name"],
+
+            "email":
+                row["email"],
+
+            "created_at":
+                row["created_at"]
+
         })
 
     return jsonify({
+
         "success": True,
-        "customers": customers
+
+        "customers":
+            customers
+
     })
 
 
@@ -958,51 +1471,88 @@ def admin_customers():
 # CUSTOMER REGISTER
 # ============================================================
 
-@app.route("/api/register", methods=["POST"])
+@app.route(
+    "/api/register",
+    methods=["POST"]
+)
 def register():
 
-    data = request.get_json(silent=True) or {}
+    data = (
+        request.get_json(
+            silent=True
+        )
+        or {}
+    )
 
     name = str(
-        data.get("name", "")
+        data.get(
+            "name",
+            ""
+        )
     ).strip()
 
     email = str(
-        data.get("email", "")
+        data.get(
+            "email",
+            ""
+        )
     ).strip().lower()
 
     password = str(
-        data.get("password", "")
+        data.get(
+            "password",
+            ""
+        )
     )
 
-    if not name or not email or not password:
+    if (
+        not name
+        or
+        not email
+        or
+        not password
+    ):
 
         return jsonify({
+
             "success": False,
-            "message": (
+
+            "message":
                 "Name, email and password are required"
-            )
+
         }), 400
 
     db = get_db()
 
-    existing = db.execute(
-        "SELECT id FROM users WHERE email = ?",
-        (email,)
-    ).fetchone()
+    existing = db.execute("""
+        SELECT id
+        FROM users
+        WHERE email = ?
+    """, (
+        email,
+    )).fetchone()
 
     if existing:
 
         db.close()
 
         return jsonify({
+
             "success": False,
-            "message": "Email already registered"
+
+            "message":
+                "Email already registered"
+
         }), 409
 
     db.execute("""
         INSERT INTO users
-        (name, email, password)
+        (
+            name,
+            email,
+            password
+        )
+
         VALUES (?, ?, ?)
     """, (
         name,
@@ -1015,8 +1565,12 @@ def register():
     db.close()
 
     return jsonify({
+
         "success": True,
-        "message": "Account created successfully"
+
+        "message":
+            "Account created successfully"
+
     }), 201
 
 
@@ -1024,37 +1578,64 @@ def register():
 # CREATE ORDER
 # ============================================================
 
-@app.route("/api/orders", methods=["POST"])
+@app.route(
+    "/api/orders",
+    methods=["POST"]
+)
 def create_order():
 
-    data = request.get_json(silent=True) or {}
+    data = (
+        request.get_json(
+            silent=True
+        )
+        or {}
+    )
 
     order_data = data.get(
         "order_data",
-        data.get("items", [])
+        data.get(
+            "items",
+            []
+        )
     )
 
     try:
 
         total = float(
-            data.get("total", 0)
+            data.get(
+                "total",
+                0
+            )
         )
 
-    except (TypeError, ValueError):
+    except (
+        TypeError,
+        ValueError
+    ):
 
         total = 0
 
-    user_id = data.get("user_id")
+    user_id = data.get(
+        "user_id"
+    )
 
     db = get_db()
 
     cursor = db.execute("""
         INSERT INTO orders
-        (user_id, order_data, total, status)
+        (
+            user_id,
+            order_data,
+            total,
+            status
+        )
+
         VALUES (?, ?, ?, ?)
     """, (
         user_id,
-        str(order_data),
+        json.dumps(
+            order_data
+        ),
         total,
         "Pending"
     ))
@@ -1066,9 +1647,15 @@ def create_order():
     db.close()
 
     return jsonify({
+
         "success": True,
-        "message": "Order created successfully",
-        "order_id": order_id
+
+        "message":
+            "Order created successfully",
+
+        "order_id":
+            order_id
+
     }), 201
 
 
@@ -1076,17 +1663,39 @@ def create_order():
 # HEALTH CHECK
 # ============================================================
 
-@app.route("/health")
+@app.route(
+    "/health"
+)
 def health():
 
+    db = get_db()
+
+    product_count = db.execute(
+        "SELECT COUNT(*) FROM products"
+    ).fetchone()[0]
+
+    db.close()
+
     return jsonify({
+
         "success": True,
-        "status": "H&S Clothing Backend is Running!"
+
+        "status":
+            "H&S Clothing Backend is Running!",
+
+        "database":
+            os.path.basename(
+                DATABASE
+            ),
+
+        "product_count":
+            product_count
+
     })
 
 
 # ============================================================
-# START DATABASE
+# DATABASE STARTUP
 # ============================================================
 
 init_database()
@@ -1099,12 +1708,16 @@ init_database()
 if __name__ == "__main__":
 
     app.run(
+
         host="0.0.0.0",
+
         port=int(
             os.environ.get(
                 "PORT",
                 5000
             )
         ),
+
         debug=False
+
     )
