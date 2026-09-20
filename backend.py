@@ -1,9 +1,19 @@
 import os
 import sqlite3
+import uuid
 from functools import wraps
 
-from flask import Flask, render_template, jsonify, request, session, redirect
+from flask import (
+    Flask,
+    render_template,
+    jsonify,
+    request,
+    session,
+    redirect,
+    send_from_directory
+)
 from flask_cors import CORS
+from werkzeug.utils import secure_filename
 
 
 # ============================================================
@@ -23,6 +33,9 @@ app.config["SESSION_COOKIE_SECURE"] = (
     os.environ.get("SESSION_COOKIE_SECURE", "true").lower() == "true"
 )
 
+# Maximum upload size: 8 MB
+app.config["MAX_CONTENT_LENGTH"] = 8 * 1024 * 1024
+
 CORS(app, supports_credentials=True)
 
 
@@ -32,12 +45,12 @@ CORS(app, supports_credentials=True)
 
 ADMIN_USERNAME = os.environ.get(
     "ADMIN_USERNAME",
-    "lalahaseeb@816gmail.com"
+    "admin"
 )
 
 ADMIN_PASSWORD = os.environ.get(
     "ADMIN_PASSWORD",
-    "Haseeb12000"
+    "change-this-password"
 )
 
 
@@ -65,7 +78,41 @@ def column_exists(db, table, column):
     return any(row["name"] == column for row in columns)
 
 
+# ============================================================
+# IMAGE UPLOAD CONFIGURATION
+# ============================================================
+
+UPLOAD_FOLDER = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    "uploads"
+)
+
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+ALLOWED_EXTENSIONS = {
+    "jpg",
+    "jpeg",
+    "png",
+    "webp",
+    "gif"
+}
+
+
+def allowed_file(filename):
+    if not filename or "." not in filename:
+        return False
+
+    extension = filename.rsplit(".", 1)[1].lower()
+
+    return extension in ALLOWED_EXTENSIONS
+
+
+# ============================================================
+# DATABASE INITIALIZATION
+# ============================================================
+
 def init_database():
+
     db = get_db()
 
     # USERS
@@ -105,7 +152,7 @@ def init_database():
         )
     """)
 
-    # Add extra product fields if database already exists
+    # Add extra product fields
     if not column_exists(db, "products", "celebrity"):
         db.execute(
             "ALTER TABLE products ADD COLUMN celebrity TEXT DEFAULT ''"
@@ -118,13 +165,15 @@ def init_database():
 
     db.commit()
 
-    # Seed products only when database is empty
+    # Seed products only when empty
     count = db.execute(
         "SELECT COUNT(*) FROM products"
     ).fetchone()[0]
 
     if count == 0:
+
         products = [
+
             (
                 "Black Luxury Suit",
                 "Men",
@@ -134,6 +183,7 @@ def init_database():
                 "Bollywood Inspired",
                 10
             ),
+
             (
                 "Classic White Shirt",
                 "Men",
@@ -143,6 +193,7 @@ def init_database():
                 "Classic Celebrity Style",
                 15
             ),
+
             (
                 "Premium Black Dress",
                 "Women",
@@ -152,6 +203,7 @@ def init_database():
                 "Bollywood Inspired",
                 8
             ),
+
             (
                 "Luxury Blazer",
                 "Men",
@@ -161,6 +213,7 @@ def init_database():
                 "Hollywood Inspired",
                 12
             ),
+
             (
                 "Urban Street Jacket",
                 "Men",
@@ -170,6 +223,7 @@ def init_database():
                 "Celebrity Street Style",
                 10
             ),
+
             (
                 "Elegant Evening Dress",
                 "Women",
@@ -179,6 +233,7 @@ def init_database():
                 "Red Carpet Inspired",
                 7
             ),
+
             (
                 "Premium Denim Jacket",
                 "Men",
@@ -188,6 +243,7 @@ def init_database():
                 "Hollywood Inspired",
                 14
             ),
+
             (
                 "Luxury Women's Blazer",
                 "Women",
@@ -197,6 +253,7 @@ def init_database():
                 "Bollywood Inspired",
                 9
             )
+
         ]
 
         db.executemany("""
@@ -215,9 +272,12 @@ def init_database():
 # ============================================================
 
 def admin_required(function):
+
     @wraps(function)
     def wrapper(*args, **kwargs):
+
         if not session.get("admin_logged_in"):
+
             return jsonify({
                 "success": False,
                 "message": "Admin login required"
@@ -234,11 +294,13 @@ def admin_required(function):
 
 @app.route("/")
 def home():
+
     return render_template("index.html")
 
 
 @app.route("/admin-login")
 def admin_login_page():
+
     if session.get("admin_logged_in"):
         return redirect("/admin")
 
@@ -247,10 +309,24 @@ def admin_login_page():
 
 @app.route("/admin")
 def admin_page():
+
     if not session.get("admin_logged_in"):
         return redirect("/admin-login")
 
     return render_template("admin.html")
+
+
+# ============================================================
+# UPLOADED IMAGE ROUTE
+# ============================================================
+
+@app.route("/uploads/<path:filename>")
+def uploaded_file(filename):
+
+    return send_from_directory(
+        UPLOAD_FOLDER,
+        filename
+    )
 
 
 # ============================================================
@@ -259,13 +335,24 @@ def admin_page():
 
 @app.route("/api/admin/login", methods=["POST"])
 def admin_login():
+
     data = request.get_json(silent=True) or {}
 
-    username = str(data.get("username", "")).strip()
-    password = str(data.get("password", ""))
+    username = str(
+        data.get("username", "")
+    ).strip()
 
-    if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
+    password = str(
+        data.get("password", "")
+    )
+
+    if (
+        username == ADMIN_USERNAME
+        and password == ADMIN_PASSWORD
+    ):
+
         session.clear()
+
         session["admin_logged_in"] = True
         session["admin_username"] = username
 
@@ -282,7 +369,9 @@ def admin_login():
 
 @app.route("/api/admin/me", methods=["GET"])
 def admin_me():
+
     if session.get("admin_logged_in"):
+
         return jsonify({
             "success": True,
             "logged_in": True,
@@ -297,6 +386,7 @@ def admin_me():
 
 @app.route("/api/admin/logout", methods=["POST"])
 def admin_logout():
+
     session.clear()
 
     return jsonify({
@@ -310,6 +400,7 @@ def admin_logout():
 # ============================================================
 
 def product_to_dict(row):
+
     return {
         "id": row["id"],
         "name": row["name"],
@@ -317,8 +408,16 @@ def product_to_dict(row):
         "type": row["type"] or "",
         "price": float(row["price"]),
         "image": row["image"] or "",
-        "celebrity": row["celebrity"] if "celebrity" in row.keys() else "",
-        "stock": int(row["stock"]) if "stock" in row.keys() else 0,
+        "celebrity": (
+            row["celebrity"]
+            if "celebrity" in row.keys()
+            else ""
+        ),
+        "stock": (
+            int(row["stock"])
+            if "stock" in row.keys()
+            else 0
+        ),
         "created_at": row["created_at"]
     }
 
@@ -329,6 +428,7 @@ def product_to_dict(row):
 
 @app.route("/api/products", methods=["GET"])
 def get_products():
+
     db = get_db()
 
     rows = db.execute("""
@@ -341,12 +441,16 @@ def get_products():
 
     return jsonify({
         "success": True,
-        "products": [product_to_dict(row) for row in rows]
+        "products": [
+            product_to_dict(row)
+            for row in rows
+        ]
     })
 
 
 @app.route("/api/products/<int:product_id>", methods=["GET"])
 def get_product(product_id):
+
     db = get_db()
 
     row = db.execute(
@@ -357,6 +461,7 @@ def get_product(product_id):
     db.close()
 
     if not row:
+
         return jsonify({
             "success": False,
             "message": "Product not found"
@@ -369,42 +474,133 @@ def get_product(product_id):
 
 
 # ============================================================
+# IMAGE UPLOAD API
+# ============================================================
+
+@app.route("/api/upload-image", methods=["POST"])
+@admin_required
+def upload_image():
+
+    if "image" not in request.files:
+
+        return jsonify({
+            "success": False,
+            "message": "No image file selected"
+        }), 400
+
+    file = request.files["image"]
+
+    if not file or file.filename == "":
+
+        return jsonify({
+            "success": False,
+            "message": "Please select an image"
+        }), 400
+
+    if not allowed_file(file.filename):
+
+        return jsonify({
+            "success": False,
+            "message": (
+                "Invalid image format. "
+                "Use JPG, JPEG, PNG, WEBP or GIF."
+            )
+        }), 400
+
+    original_name = secure_filename(
+        file.filename
+    )
+
+    extension = original_name.rsplit(
+        ".",
+        1
+    )[1].lower()
+
+    unique_name = (
+        uuid.uuid4().hex
+        + "."
+        + extension
+    )
+
+    save_path = os.path.join(
+        UPLOAD_FOLDER,
+        unique_name
+    )
+
+    file.save(save_path)
+
+    image_url = "/uploads/" + unique_name
+
+    return jsonify({
+        "success": True,
+        "message": "Image uploaded successfully",
+        "image": image_url
+    })
+
+
+# ============================================================
 # ADMIN PRODUCT CREATE
 # ============================================================
 
 @app.route("/api/products", methods=["POST"])
 @admin_required
 def create_product():
+
     data = request.get_json(silent=True) or {}
 
-    name = str(data.get("name", "")).strip()
-    category = str(data.get("category", "Men")).strip()
-    product_type = str(data.get("type", "General")).strip()
-    image = str(data.get("image", "")).strip()
-    celebrity = str(data.get("celebrity", "")).strip()
+    name = str(
+        data.get("name", "")
+    ).strip()
+
+    category = str(
+        data.get("category", "Men")
+    ).strip()
+
+    product_type = str(
+        data.get("type", "General")
+    ).strip()
+
+    image = str(
+        data.get("image", "")
+    ).strip()
+
+    celebrity = str(
+        data.get("celebrity", "")
+    ).strip()
 
     try:
-        price = float(data.get("price", 0))
-        stock = int(data.get("stock", 10))
+
+        price = float(
+            data.get("price", 0)
+        )
+
+        stock = int(
+            data.get("stock", 10)
+        )
+
     except (TypeError, ValueError):
+
         return jsonify({
             "success": False,
             "message": "Price and stock must be valid numbers"
         }), 400
 
     if not name:
+
         return jsonify({
             "success": False,
             "message": "Product name is required"
         }), 400
 
     if price < 0:
+
         return jsonify({
             "success": False,
             "message": "Price cannot be negative"
         }), 400
 
     if stock < 0:
+
         return jsonify({
             "success": False,
             "message": "Stock cannot be negative"
@@ -451,30 +647,55 @@ def create_product():
 @app.route("/api/products/<int:product_id>", methods=["PUT"])
 @admin_required
 def update_product(product_id):
+
     data = request.get_json(silent=True) or {}
 
-    name = str(data.get("name", "")).strip()
-    category = str(data.get("category", "Men")).strip()
-    product_type = str(data.get("type", "General")).strip()
-    image = str(data.get("image", "")).strip()
-    celebrity = str(data.get("celebrity", "")).strip()
+    name = str(
+        data.get("name", "")
+    ).strip()
+
+    category = str(
+        data.get("category", "Men")
+    ).strip()
+
+    product_type = str(
+        data.get("type", "General")
+    ).strip()
+
+    image = str(
+        data.get("image", "")
+    ).strip()
+
+    celebrity = str(
+        data.get("celebrity", "")
+    ).strip()
 
     try:
-        price = float(data.get("price", 0))
-        stock = int(data.get("stock", 10))
+
+        price = float(
+            data.get("price", 0)
+        )
+
+        stock = int(
+            data.get("stock", 10)
+        )
+
     except (TypeError, ValueError):
+
         return jsonify({
             "success": False,
             "message": "Price and stock must be valid numbers"
         }), 400
 
     if not name:
+
         return jsonify({
             "success": False,
             "message": "Product name is required"
         }), 400
 
     if price < 0 or stock < 0:
+
         return jsonify({
             "success": False,
             "message": "Price and stock cannot be negative"
@@ -483,11 +704,12 @@ def update_product(product_id):
     db = get_db()
 
     existing = db.execute(
-        "SELECT id FROM products WHERE id = ?",
+        "SELECT * FROM products WHERE id = ?",
         (product_id,)
     ).fetchone()
 
     if not existing:
+
         db.close()
 
         return jsonify({
@@ -539,14 +761,16 @@ def update_product(product_id):
 @app.route("/api/products/<int:product_id>", methods=["DELETE"])
 @admin_required
 def delete_product(product_id):
+
     db = get_db()
 
     existing = db.execute(
-        "SELECT id FROM products WHERE id = ?",
+        "SELECT image FROM products WHERE id = ?",
         (product_id,)
     ).fetchone()
 
     if not existing:
+
         db.close()
 
         return jsonify({
@@ -554,13 +778,39 @@ def delete_product(product_id):
             "message": "Product not found"
         }), 404
 
+    image = existing["image"]
+
     db.execute(
         "DELETE FROM products WHERE id = ?",
         (product_id,)
     )
 
     db.commit()
+
     db.close()
+
+    # Delete uploaded image if it belongs to our uploads folder
+    if image and image.startswith("/uploads/"):
+
+        filename = image.replace(
+            "/uploads/",
+            "",
+            1
+        )
+
+        filename = os.path.basename(filename)
+
+        image_path = os.path.join(
+            UPLOAD_FOLDER,
+            filename
+        )
+
+        if os.path.isfile(image_path):
+
+            try:
+                os.remove(image_path)
+            except OSError:
+                pass
 
     return jsonify({
         "success": True,
@@ -575,6 +825,7 @@ def delete_product(product_id):
 @app.route("/api/admin/stats", methods=["GET"])
 @admin_required
 def admin_stats():
+
     db = get_db()
 
     product_count = db.execute(
@@ -613,6 +864,7 @@ def admin_stats():
 @app.route("/api/admin/orders", methods=["GET"])
 @admin_required
 def admin_orders():
+
     db = get_db()
 
     rows = db.execute("""
@@ -635,12 +887,24 @@ def admin_orders():
     orders = []
 
     for row in rows:
+
         orders.append({
             "id": row["id"],
-            "customer_name": row["customer_name"] or "Guest",
-            "customer_email": row["customer_email"] or "N/A",
-            "total": float(row["total"] or 0),
-            "status": row["status"] or "Pending",
+            "customer_name": (
+                row["customer_name"]
+                or "Guest"
+            ),
+            "customer_email": (
+                row["customer_email"]
+                or "N/A"
+            ),
+            "total": float(
+                row["total"] or 0
+            ),
+            "status": (
+                row["status"]
+                or "Pending"
+            ),
             "created_at": row["created_at"],
             "order_data": row["order_data"]
         })
@@ -658,6 +922,7 @@ def admin_orders():
 @app.route("/api/admin/customers", methods=["GET"])
 @admin_required
 def admin_customers():
+
     db = get_db()
 
     rows = db.execute("""
@@ -675,6 +940,7 @@ def admin_customers():
     customers = []
 
     for row in rows:
+
         customers.append({
             "id": row["id"],
             "name": row["name"],
@@ -694,16 +960,28 @@ def admin_customers():
 
 @app.route("/api/register", methods=["POST"])
 def register():
+
     data = request.get_json(silent=True) or {}
 
-    name = str(data.get("name", "")).strip()
-    email = str(data.get("email", "")).strip().lower()
-    password = str(data.get("password", ""))
+    name = str(
+        data.get("name", "")
+    ).strip()
+
+    email = str(
+        data.get("email", "")
+    ).strip().lower()
+
+    password = str(
+        data.get("password", "")
+    )
 
     if not name or not email or not password:
+
         return jsonify({
             "success": False,
-            "message": "Name, email and password are required"
+            "message": (
+                "Name, email and password are required"
+            )
         }), 400
 
     db = get_db()
@@ -714,6 +992,7 @@ def register():
     ).fetchone()
 
     if existing:
+
         db.close()
 
         return jsonify({
@@ -722,7 +1001,8 @@ def register():
         }), 409
 
     db.execute("""
-        INSERT INTO users (name, email, password)
+        INSERT INTO users
+        (name, email, password)
         VALUES (?, ?, ?)
     """, (
         name,
@@ -731,6 +1011,7 @@ def register():
     ))
 
     db.commit()
+
     db.close()
 
     return jsonify({
@@ -745,13 +1026,22 @@ def register():
 
 @app.route("/api/orders", methods=["POST"])
 def create_order():
+
     data = request.get_json(silent=True) or {}
 
-    order_data = data.get("order_data", data.get("items", []))
+    order_data = data.get(
+        "order_data",
+        data.get("items", [])
+    )
 
     try:
-        total = float(data.get("total", 0))
+
+        total = float(
+            data.get("total", 0)
+        )
+
     except (TypeError, ValueError):
+
         total = 0
 
     user_id = data.get("user_id")
@@ -788,6 +1078,7 @@ def create_order():
 
 @app.route("/health")
 def health():
+
     return jsonify({
         "success": True,
         "status": "H&S Clothing Backend is Running!"
@@ -806,8 +1097,14 @@ init_database()
 # ============================================================
 
 if __name__ == "__main__":
+
     app.run(
         host="0.0.0.0",
-        port=int(os.environ.get("PORT", 5000)),
+        port=int(
+            os.environ.get(
+                "PORT",
+                5000
+            )
+        ),
         debug=False
     )
