@@ -1,11 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
 <title>H&S Clothing | Admin Dashboard</title>
 
 <style>
+
 *{
     box-sizing:border-box;
     margin:0;
@@ -17,6 +25,10 @@ body{
     background:#f5f5f5;
     color:#111;
 }
+
+/* ============================================================
+   SIDEBAR
+============================================================ */
 
 .sidebar{
     position:fixed;
@@ -55,6 +67,10 @@ body{
     background:#333;
 }
 
+/* ============================================================
+   MAIN
+============================================================ */
+
 .main{
     margin-left:240px;
     padding:30px;
@@ -92,6 +108,10 @@ body{
     background:#333;
 }
 
+/* ============================================================
+   STATS
+============================================================ */
+
 .stats{
     display:grid;
     grid-template-columns:repeat(4,1fr);
@@ -121,6 +141,10 @@ body{
     font-weight:bold;
 }
 
+/* ============================================================
+   SECTIONS
+============================================================ */
+
 .section{
     padding:25px;
     margin-bottom:25px;
@@ -139,6 +163,10 @@ body{
     display:none!important;
 }
 
+/* ============================================================
+   TABLE
+============================================================ */
+
 .table-container{
     width:100%;
     overflow-x:auto;
@@ -150,7 +178,8 @@ table{
     min-width:650px;
 }
 
-th,td{
+th,
+td{
     padding:14px;
     border-bottom:1px solid #ddd;
     text-align:left;
@@ -171,6 +200,10 @@ td{
     padding:30px;
     color:#777;
 }
+
+/* ============================================================
+   FORM
+============================================================ */
 
 .form-grid{
     display:grid;
@@ -202,6 +235,10 @@ td{
     font-size:15px;
     background:#fff;
 }
+
+/* ============================================================
+   IMAGE UPLOAD
+============================================================ */
 
 .image-upload-box{
     border:2px dashed #bbb;
@@ -263,6 +300,10 @@ td{
     color:#555;
 }
 
+/* ============================================================
+   BUTTONS
+============================================================ */
+
 .form-actions{
     grid-column:1/-1;
     display:flex;
@@ -309,6 +350,10 @@ td{
     margin-bottom:4px;
 }
 
+/* ============================================================
+   MESSAGES
+============================================================ */
+
 .message{
     margin-top:15px;
     padding:12px;
@@ -327,6 +372,16 @@ td{
     background:#ffebee;
     color:#b71c1c;
 }
+
+.message.info{
+    display:block;
+    background:#e3f2fd;
+    color:#0d47a1;
+}
+
+/* ============================================================
+   OTHER
+============================================================ */
 
 .status{
     display:inline-block;
@@ -350,10 +405,23 @@ td{
     margin-bottom:20px;
 }
 
+.server-count{
+    display:inline-block;
+    margin-left:10px;
+    color:#666;
+    font-size:14px;
+}
+
+/* ============================================================
+   MOBILE
+============================================================ */
+
 @media(max-width:1000px){
+
     .stats{
         grid-template-columns:repeat(2,1fr);
     }
+
 }
 
 @media(max-width:700px){
@@ -406,88 +474,146 @@ td{
     .section{
         padding:18px;
     }
+
 }
+
 </style>
+
 </head>
 
 <body>
 
-<!-- SIDEBAR -->
+<!-- ============================================================
+     SIDEBAR
+============================================================ -->
 
 <div class="sidebar">
 
-    <div class="logo">H&S CLOTHING</div>
+    <div class="logo">
+        H&S CLOTHING
+    </div>
 
-    <button class="nav-btn active"
-            onclick="showSection('dashboard',this)">
+    <button
+        class="nav-btn active"
+        onclick="showSection('dashboard',this)"
+    >
         📊 Dashboard
     </button>
 
-    <button class="nav-btn"
-            onclick="showSection('products',this)">
+    <button
+        class="nav-btn"
+        onclick="showSection('products',this)"
+    >
         👕 Products
     </button>
 
-    <button class="nav-btn"
-            onclick="showSection('orders',this)">
+    <button
+        class="nav-btn"
+        onclick="showSection('orders',this)"
+    >
         📦 Orders
     </button>
 
-    <button class="nav-btn"
-            onclick="showSection('customers',this)">
+    <button
+        class="nav-btn"
+        onclick="showSection('customers',this)"
+    >
         👤 Customers
     </button>
 
 </div>
 
 
-<!-- MAIN -->
+<!-- ============================================================
+     MAIN
+============================================================ -->
 
 <div class="main">
 
     <div class="header">
 
         <div>
-            <h1>Admin Dashboard</h1>
 
-            <div id="adminUsername"
-                 class="admin-user">
+            <h1>
+                Admin Dashboard
+            </h1>
+
+            <div
+                id="adminUsername"
+                class="admin-user"
+            >
                 Checking admin session...
             </div>
+
         </div>
 
-        <button class="logout"
-                onclick="logoutAdmin()">
+        <button
+            class="logout"
+            onclick="logoutAdmin()"
+        >
             Logout
         </button>
 
     </div>
 
 
-    <!-- DASHBOARD -->
+    <!-- ========================================================
+         DASHBOARD
+    ======================================================== -->
 
     <div id="dashboard">
 
         <div class="stats">
 
             <div class="card">
-                <h3>Total Products</h3>
-                <p id="productCount">0</p>
+
+                <h3>
+                    Total Products
+                </h3>
+
+                <p id="productCount">
+                    0
+                </p>
+
             </div>
 
-            <div class="card">
-                <h3>Total Orders</h3>
-                <p id="orderCount">0</p>
-            </div>
 
             <div class="card">
-                <h3>Total Customers</h3>
-                <p id="customerCount">0</p>
+
+                <h3>
+                    Total Orders
+                </h3>
+
+                <p id="orderCount">
+                    0
+                </p>
+
             </div>
 
+
             <div class="card">
-                <h3>Total Sales</h3>
-                <p id="salesTotal">₹0</p>
+
+                <h3>
+                    Total Customers
+                </h3>
+
+                <p id="customerCount">
+                    0
+                </p>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>
+                    Total Sales
+                </h3>
+
+                <p id="salesTotal">
+                    ₹0
+                </p>
+
             </div>
 
         </div>
@@ -495,28 +621,44 @@ td{
 
         <div class="section">
 
-            <h2>Products</h2>
+            <h2>
+                Products
+            </h2>
 
-            <button class="btn btn-secondary refresh-btn"
-                    onclick="loadProducts()">
+            <button
+                class="btn btn-secondary refresh-btn"
+                onclick="loadProducts(true)"
+            >
                 🔄 Refresh Products
             </button>
+
+            <span
+                id="serverProductCount"
+                class="server-count"
+            >
+                Server: checking...
+            </span>
+
 
             <div class="table-container">
 
                 <table>
 
                     <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Product</th>
-                        <th>Category</th>
-                        <th>Type</th>
-                        <th>Price</th>
-                    </tr>
+
+                        <tr>
+                            <th>ID</th>
+                            <th>Product</th>
+                            <th>Category</th>
+                            <th>Type</th>
+                            <th>Price</th>
+                        </tr>
+
                     </thead>
 
-                    <tbody id="dashboardProductsTable"></tbody>
+                    <tbody
+                        id="dashboardProductsTable"
+                    ></tbody>
 
                 </table>
 
@@ -527,12 +669,18 @@ td{
     </div>
 
 
-    <!-- PRODUCTS -->
+    <!-- ========================================================
+         PRODUCTS
+    ======================================================== -->
 
-    <div id="products"
-         class="section hidden">
+    <div
+        id="products"
+        class="section hidden"
+    >
 
-        <h2>Manage Products</h2>
+        <h2>
+            Manage Products
+        </h2>
 
         <p class="section-description">
             Add, edit or delete products from your H&S Clothing store.
@@ -541,81 +689,107 @@ td{
 
         <form id="productForm">
 
-            <input type="hidden"
-                   id="editingProductId">
+            <input
+                type="hidden"
+                id="editingProductId"
+            >
 
 
             <div class="form-grid">
 
                 <div class="form-group">
 
-                    <label>Product Name</label>
+                    <label>
+                        Product Name
+                    </label>
 
-                    <input id="productName"
-                           type="text"
-                           placeholder="Product Name"
-                           required>
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label>Category</label>
-
-                    <input id="productCategory"
-                           type="text"
-                           placeholder="Men / Women / Accessories"
-                           required>
+                    <input
+                        id="productName"
+                        type="text"
+                        placeholder="Product Name"
+                        required
+                    >
 
                 </div>
 
 
                 <div class="form-group">
 
-                    <label>Type</label>
+                    <label>
+                        Category
+                    </label>
 
-                    <input id="productType"
-                           type="text"
-                           placeholder="Formal / Casual / Streetwear">
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label>Price</label>
-
-                    <input id="productPrice"
-                           type="number"
-                           min="0"
-                           step="0.01"
-                           placeholder="Price"
-                           required>
+                    <input
+                        id="productCategory"
+                        type="text"
+                        placeholder="Men / Women / Accessories"
+                        required
+                    >
 
                 </div>
 
 
                 <div class="form-group">
 
-                    <label>Stock</label>
+                    <label>
+                        Type
+                    </label>
 
-                    <input id="productStock"
-                           type="number"
-                           min="0"
-                           value="10"
-                           placeholder="Stock quantity">
+                    <input
+                        id="productType"
+                        type="text"
+                        placeholder="Formal / Casual / Streetwear"
+                    >
 
                 </div>
 
 
                 <div class="form-group">
 
-                    <label>Celebrity / Style</label>
+                    <label>
+                        Price
+                    </label>
 
-                    <input id="productCelebrity"
-                           type="text"
-                           placeholder="Celebrity Inspired">
+                    <input
+                        id="productPrice"
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        placeholder="Price"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Stock
+                    </label>
+
+                    <input
+                        id="productStock"
+                        type="number"
+                        min="0"
+                        value="10"
+                        placeholder="Stock quantity"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Celebrity / Style
+                    </label>
+
+                    <input
+                        id="productCelebrity"
+                        type="text"
+                        placeholder="Celebrity Inspired"
+                    >
 
                 </div>
 
@@ -624,12 +798,18 @@ td{
 
                 <div class="form-group full">
 
-                    <label>Product Image</label>
+                    <label>
+                        Product Image
+                    </label>
 
-                    <label class="image-upload-box"
-                           for="productImageFile">
+                    <label
+                        class="image-upload-box"
+                        for="productImageFile"
+                    >
 
-                        <div class="upload-icon">📸</div>
+                        <div class="upload-icon">
+                            📸
+                        </div>
 
                         <div class="upload-text">
                             Choose Image From Gallery
@@ -639,35 +819,45 @@ td{
                             JPG, PNG, WEBP or GIF — maximum 8 MB
                         </div>
 
-                        <input id="productImageFile"
-                               type="file"
-                               accept="image/jpeg,image/png,image/webp,image/gif">
+                        <input
+                            id="productImageFile"
+                            type="file"
+                            accept="image/jpeg,image/png,image/webp,image/gif"
+                        >
 
                     </label>
 
 
-                    <div id="selectedFileName"
-                         class="selected-file">
+                    <div
+                        id="selectedFileName"
+                        class="selected-file"
+                    ></div>
+
+
+                    <div
+                        id="imagePreview"
+                        class="image-preview"
+                    >
+
+                        <img
+                            id="previewImage"
+                            src=""
+                            alt="Product Preview"
+                        >
+
                     </div>
 
 
-                    <div id="imagePreview"
-                         class="image-preview">
-
-                        <img id="previewImage"
-                             src=""
-                             alt="Product Preview">
-
-                    </div>
+                    <div
+                        id="uploadStatus"
+                        class="upload-status"
+                    ></div>
 
 
-                    <div id="uploadStatus"
-                         class="upload-status">
-                    </div>
-
-
-                    <input id="productImage"
-                           type="hidden">
+                    <input
+                        id="productImage"
+                        type="hidden"
+                    >
 
                 </div>
 
@@ -676,16 +866,20 @@ td{
 
                 <div class="form-actions">
 
-                    <button id="productSubmitButton"
-                            type="submit"
-                            class="btn btn-primary">
+                    <button
+                        id="productSubmitButton"
+                        type="submit"
+                        class="btn btn-primary"
+                    >
                         ➕ Add Product
                     </button>
 
-                    <button id="cancelEditButton"
-                            type="button"
-                            class="btn btn-secondary hidden"
-                            onclick="cancelEdit()">
+                    <button
+                        id="cancelEditButton"
+                        type="button"
+                        class="btn btn-secondary hidden"
+                        onclick="cancelEdit()"
+                    >
                         Cancel Edit
                     </button>
 
@@ -696,20 +890,39 @@ td{
         </form>
 
 
-        <div id="productMessage"
-             class="message">
-        </div>
+        <div
+            id="productMessage"
+            class="message"
+        ></div>
 
 
-        <hr style="margin:30px 0;border:0;border-top:1px solid #ddd;">
+        <hr
+            style="
+                margin:30px 0;
+                border:0;
+                border-top:1px solid #ddd;
+            "
+        >
 
 
-        <h2>All Products</h2>
+        <h2>
+            All Products
+        </h2>
 
-        <button class="btn btn-secondary refresh-btn"
-                onclick="loadProducts()">
+
+        <button
+            class="btn btn-secondary refresh-btn"
+            onclick="loadProducts(true)"
+        >
             🔄 Refresh
         </button>
+
+        <span
+            id="manageServerCount"
+            class="server-count"
+        >
+            Server: checking...
+        </span>
 
 
         <div class="table-container">
@@ -717,18 +930,22 @@ td{
             <table>
 
                 <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Image</th>
-                    <th>Product</th>
-                    <th>Category</th>
-                    <th>Type</th>
-                    <th>Price</th>
-                    <th>Actions</th>
-                </tr>
+
+                    <tr>
+                        <th>ID</th>
+                        <th>Image</th>
+                        <th>Product</th>
+                        <th>Category</th>
+                        <th>Type</th>
+                        <th>Price</th>
+                        <th>Actions</th>
+                    </tr>
+
                 </thead>
 
-                <tbody id="manageProductsTable"></tbody>
+                <tbody
+                    id="manageProductsTable"
+                ></tbody>
 
             </table>
 
@@ -737,19 +954,27 @@ td{
     </div>
 
 
-    <!-- ORDERS -->
+    <!-- ========================================================
+         ORDERS
+    ======================================================== -->
 
-    <div id="orders"
-         class="section hidden">
+    <div
+        id="orders"
+        class="section hidden"
+    >
 
-        <h2>Orders</h2>
+        <h2>
+            Orders
+        </h2>
 
         <p class="section-description">
             All customer orders are displayed below.
         </p>
 
-        <button class="btn btn-secondary refresh-btn"
-                onclick="loadOrders()">
+        <button
+            class="btn btn-secondary refresh-btn"
+            onclick="loadOrders()"
+        >
             🔄 Refresh Orders
         </button>
 
@@ -758,18 +983,22 @@ td{
             <table>
 
                 <thead>
-                <tr>
-                    <th>Order ID</th>
-                    <th>Customer</th>
-                    <th>Email</th>
-                    <th>Total</th>
-                    <th>Status</th>
-                    <th>Date</th>
-                    <th>Order Data</th>
-                </tr>
+
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Email</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Order Data</th>
+                    </tr>
+
                 </thead>
 
-                <tbody id="ordersTable"></tbody>
+                <tbody
+                    id="ordersTable"
+                ></tbody>
 
             </table>
 
@@ -778,19 +1007,27 @@ td{
     </div>
 
 
-    <!-- CUSTOMERS -->
+    <!-- ========================================================
+         CUSTOMERS
+    ======================================================== -->
 
-    <div id="customers"
-         class="section hidden">
+    <div
+        id="customers"
+        class="section hidden"
+    >
 
-        <h2>Customers</h2>
+        <h2>
+            Customers
+        </h2>
 
         <p class="section-description">
             Registered customers on your H&S Clothing website.
         </p>
 
-        <button class="btn btn-secondary refresh-btn"
-                onclick="loadCustomers()">
+        <button
+            class="btn btn-secondary refresh-btn"
+            onclick="loadCustomers()"
+        >
             🔄 Refresh Customers
         </button>
 
@@ -799,15 +1036,19 @@ td{
             <table>
 
                 <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Registered</th>
-                </tr>
+
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Registered</th>
+                    </tr>
+
                 </thead>
 
-                <tbody id="customersTable"></tbody>
+                <tbody
+                    id="customersTable"
+                ></tbody>
 
             </table>
 
@@ -833,7 +1074,10 @@ const API = "";
 
 function escapeHTML(value){
 
-    if(value === null || value === undefined){
+    if(
+        value === null ||
+        value === undefined
+    ){
         return "";
     }
 
@@ -848,11 +1092,16 @@ function escapeHTML(value){
 
 function formatPrice(value){
 
-    const number = Number(value || 0);
+    const number =
+        Number(value || 0);
 
-    return "₹" + number.toLocaleString("en-IN",{
-        maximumFractionDigits:2
-    });
+    return "₹" +
+        number.toLocaleString(
+            "en-IN",
+            {
+                maximumFractionDigits:2
+            }
+        );
 }
 
 
@@ -862,15 +1111,31 @@ function formatDate(value){
         return "-";
     }
 
-    const date = new Date(
-        String(value).replace(" ","T")
-    );
+    const date =
+        new Date(
+            String(value).replace(
+                " ",
+                "T"
+            )
+        );
 
-    if(isNaN(date.getTime())){
+    if(
+        isNaN(
+            date.getTime()
+        )
+    ){
         return escapeHTML(value);
     }
 
-    return date.toLocaleString("en-IN");
+    return date.toLocaleString(
+        "en-IN"
+    );
+}
+
+
+function cacheBuster(){
+
+    return Date.now();
 }
 
 
@@ -878,19 +1143,27 @@ function formatDate(value){
    MESSAGE
 ============================================================ */
 
-function showMessage(elementId,message,type){
+function showMessage(
+    elementId,
+    message,
+    type
+){
 
     const element =
-        document.getElementById(elementId);
+        document.getElementById(
+            elementId
+        );
 
-    element.textContent = message;
+    element.textContent =
+        message;
 
     element.className =
         "message " + type;
 
     setTimeout(function(){
 
-        element.className = "message";
+        element.className =
+            "message";
 
     },5000);
 }
@@ -900,7 +1173,10 @@ function showMessage(elementId,message,type){
    NAVIGATION
 ============================================================ */
 
-function showSection(sectionId,button){
+function showSection(
+    sectionId,
+    button
+){
 
     const sections = [
         "dashboard",
@@ -909,23 +1185,37 @@ function showSection(sectionId,button){
         "customers"
     ];
 
-    sections.forEach(function(id){
+    sections.forEach(
+        function(id){
 
-        const section =
-            document.getElementById(id);
+            const section =
+                document.getElementById(
+                    id
+                );
 
-        if(section){
-            section.classList.add("hidden");
+            if(section){
+
+                section.classList.add(
+                    "hidden"
+                );
+
+            }
+
         }
-
-    });
+    );
 
 
     const selected =
-        document.getElementById(sectionId);
+        document.getElementById(
+            sectionId
+        );
 
     if(selected){
-        selected.classList.remove("hidden");
+
+        selected.classList.remove(
+            "hidden"
+        );
+
     }
 
 
@@ -933,32 +1223,58 @@ function showSection(sectionId,button){
         .querySelectorAll(".nav-btn")
         .forEach(function(btn){
 
-            btn.classList.remove("active");
+            btn.classList.remove(
+                "active"
+            );
 
         });
 
 
     if(button){
-        button.classList.add("active");
+
+        button.classList.add(
+            "active"
+        );
+
     }
 
 
-    if(sectionId === "dashboard"){
+    if(
+        sectionId === "dashboard"
+    ){
+
         loadStats();
         loadProducts();
+
     }
 
-    if(sectionId === "products"){
+
+    if(
+        sectionId === "products"
+    ){
+
         loadProducts();
+
     }
 
-    if(sectionId === "orders"){
+
+    if(
+        sectionId === "orders"
+    ){
+
         loadOrders();
+
     }
 
-    if(sectionId === "customers"){
+
+    if(
+        sectionId === "customers"
+    ){
+
         loadCustomers();
+
     }
+
 }
 
 
@@ -972,17 +1288,24 @@ async function checkAdminSession(){
 
         const response =
             await fetch(
-                API + "/api/admin/me",
+                API +
+                "/api/admin/me?nocache=" +
+                cacheBuster(),
                 {
                     method:"GET",
-                    credentials:"include"
+                    credentials:"include",
+                    cache:"no-store"
                 }
             );
 
 
         if(!response.ok){
-            window.location.href="/admin-login";
+
+            window.location.href =
+                "/admin-login";
+
             return false;
+
         }
 
 
@@ -991,27 +1314,43 @@ async function checkAdminSession(){
 
 
         if(!data.logged_in){
-            window.location.href="/admin-login";
+
+            window.location.href =
+                "/admin-login";
+
             return false;
+
         }
 
 
-        document.getElementById("adminUsername")
+        document
+            .getElementById(
+                "adminUsername"
+            )
             .textContent =
-            "Logged in as: " +
-            (data.username || "Admin");
+                "Logged in as: " +
+                (
+                    data.username ||
+                    "Admin"
+                );
 
 
         return true;
 
     }catch(error){
 
-        console.error(error);
+        console.error(
+            "Session error:",
+            error
+        );
 
-        window.location.href="/admin-login";
+        window.location.href =
+            "/admin-login";
 
         return false;
+
     }
+
 }
 
 
@@ -1025,21 +1364,32 @@ async function loadStats(){
 
         const response =
             await fetch(
-                API + "/api/admin/stats",
+                API +
+                "/api/admin/stats?nocache=" +
+                cacheBuster(),
                 {
-                    credentials:"include"
+                    credentials:"include",
+                    cache:"no-store"
                 }
             );
 
 
-        if(response.status === 401){
-            window.location.href="/admin-login";
+        if(
+            response.status === 401
+        ){
+
+            window.location.href =
+                "/admin-login";
+
             return;
+
         }
 
 
         if(!response.ok){
+
             return;
+
         }
 
 
@@ -1048,7 +1398,9 @@ async function loadStats(){
 
 
         if(!data.success){
+
             return;
+
         }
 
 
@@ -1056,29 +1408,48 @@ async function loadStats(){
             data.stats || {};
 
 
-        document.getElementById("productCount")
+        document
+            .getElementById(
+                "productCount"
+            )
             .textContent =
-            stats.products || 0;
+                stats.products || 0;
 
 
-        document.getElementById("orderCount")
+        document
+            .getElementById(
+                "orderCount"
+            )
             .textContent =
-            stats.orders || 0;
+                stats.orders || 0;
 
 
-        document.getElementById("customerCount")
+        document
+            .getElementById(
+                "customerCount"
+            )
             .textContent =
-            stats.customers || 0;
+                stats.customers || 0;
 
 
-        document.getElementById("salesTotal")
+        document
+            .getElementById(
+                "salesTotal"
+            )
             .textContent =
-            formatPrice(stats.sales || 0);
+                formatPrice(
+                    stats.sales || 0
+                );
 
     }catch(error){
 
-        console.error("Stats error:",error);
+        console.error(
+            "Stats error:",
+            error
+        );
+
     }
+
 }
 
 
@@ -1086,7 +1457,9 @@ async function loadStats(){
    LOAD PRODUCTS
 ============================================================ */
 
-async function loadProducts(){
+async function loadProducts(
+    forceRefresh = false
+){
 
     const dashboardTable =
         document.getElementById(
@@ -1100,33 +1473,60 @@ async function loadProducts(){
 
 
     dashboardTable.innerHTML =
-        '<tr><td colspan="5" class="loading">Loading...</td></tr>';
+        '<tr><td colspan="5" class="loading">Loading products...</td></tr>';
+
 
     manageTable.innerHTML =
-        '<tr><td colspan="7" class="loading">Loading...</td></tr>';
+        '<tr><td colspan="7" class="loading">Loading products...</td></tr>';
 
 
     try{
 
+        /*
+         IMPORTANT:
+         Use authenticated admin endpoint.
+        */
+
+        const url =
+            API +
+            "/api/admin/products?nocache=" +
+            cacheBuster();
+
+
         const response =
             await fetch(
-                API + "/api/products",
+                url,
                 {
-                    credentials:"include"
+                    method:"GET",
+                    credentials:"include",
+                    cache:"no-store",
+                    headers:{
+                        "Accept":
+                            "application/json"
+                    }
                 }
             );
 
 
-        if(response.status === 401){
-            window.location.href="/admin-login";
+        if(
+            response.status === 401
+        ){
+
+            window.location.href =
+                "/admin-login";
+
             return;
+
         }
 
 
         if(!response.ok){
+
             throw new Error(
-                "Server returned " + response.status
+                "Server returned HTTP " +
+                response.status
             );
+
         }
 
 
@@ -1134,19 +1534,66 @@ async function loadProducts(){
             await response.json();
 
 
+        console.log(
+            "ADMIN PRODUCT API:",
+            data
+        );
+
+
         const products =
-            Array.isArray(data.products)
-                ? data.products
-                : [];
+            Array.isArray(
+                data.products
+            )
+            ? data.products
+            : [];
 
 
-        document.getElementById("productCount")
+        /*
+         Server count
+        */
+
+        const serverCount =
+            Number(
+                data.count ??
+                products.length
+            );
+
+
+        document
+            .getElementById(
+                "serverProductCount"
+            )
             .textContent =
-            products.length;
+                "Server: " +
+                serverCount;
 
 
-        dashboardTable.innerHTML="";
-        manageTable.innerHTML="";
+        document
+            .getElementById(
+                "manageServerCount"
+            )
+            .textContent =
+                "Server: " +
+                serverCount;
+
+
+        /*
+         Dashboard count
+        */
+
+        document
+            .getElementById(
+                "productCount"
+            )
+            .textContent =
+                serverCount;
+
+
+        dashboardTable.innerHTML =
+            "";
+
+        manageTable.innerHTML =
+            "";
 
 
         if(products.length === 0){
@@ -1154,98 +1601,207 @@ async function loadProducts(){
             dashboardTable.innerHTML =
                 '<tr><td colspan="5" class="empty">No products found.</td></tr>';
 
+
             manageTable.innerHTML =
                 '<tr><td colspan="7" class="empty">No products found.</td></tr>';
 
             return;
+
         }
 
 
-        products.forEach(function(product){
+        /*
+         Render EVERY product
+        */
 
-            /* DASHBOARD */
+        products.forEach(
+            function(product){
 
-            dashboardTable.innerHTML += `
-                <tr>
-                    <td>${escapeHTML(product.id)}</td>
-                    <td>${escapeHTML(product.name)}</td>
-                    <td>${escapeHTML(product.category)}</td>
-                    <td>${escapeHTML(product.type || "-")}</td>
-                    <td>${formatPrice(product.price)}</td>
-                </tr>
-            `;
+                /*
+                 Dashboard
+                */
 
+                dashboardTable.innerHTML += `
 
-            /* IMAGE */
+                    <tr>
 
-            let imageHTML = "-";
+                        <td>
+                            ${escapeHTML(product.id)}
+                        </td>
 
+                        <td>
+                            ${escapeHTML(product.name)}
+                        </td>
 
-            if(product.image){
+                        <td>
+                            ${escapeHTML(product.category)}
+                        </td>
 
-                imageHTML = `
-                    <img
-                        class="product-thumb"
-                        src="${escapeHTML(product.image)}"
-                        alt="Product"
-                        onerror="this.style.display='none'"
-                    >
+                        <td>
+                            ${escapeHTML(
+                                product.type || "-"
+                            )}
+                        </td>
+
+                        <td>
+                            ${formatPrice(
+                                product.price
+                            )}
+                        </td>
+
+                    </tr>
+
                 `;
+
+
+                /*
+                 Image
+                */
+
+                let imageHTML = "-";
+
+
+                if(product.image){
+
+                    imageHTML = `
+
+                        <img
+                            class="product-thumb"
+                            src="${escapeHTML(
+                                product.image
+                            )}"
+                            alt="Product"
+                            onerror="
+                                this.style.display='none'
+                            "
+                        >
+
+                    `;
+
+                }
+
+
+                /*
+                 Management table
+                */
+
+                manageTable.innerHTML += `
+
+                    <tr>
+
+                        <td>
+                            ${escapeHTML(
+                                product.id
+                            )}
+                        </td>
+
+                        <td>
+                            ${imageHTML}
+                        </td>
+
+                        <td>
+                            ${escapeHTML(
+                                product.name
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHTML(
+                                product.category
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHTML(
+                                product.type || "-"
+                            )}
+                        </td>
+
+                        <td>
+                            ${formatPrice(
+                                product.price
+                            )}
+                        </td>
+
+                        <td>
+
+                            <button
+                                class="btn btn-primary btn-small"
+                                onclick="
+                                    editProduct(
+                                        ${Number(product.id)}
+                                    )
+                                "
+                            >
+                                Edit
+                            </button>
+
+                            <button
+                                class="btn btn-danger btn-small"
+                                onclick="
+                                    deleteProduct(
+                                        ${Number(product.id)}
+                                    )
+                                "
+                            >
+                                Delete
+                            </button>
+
+                        </td>
+
+                    </tr>
+
+                `;
+
             }
-
-
-            /* MANAGEMENT */
-
-            manageTable.innerHTML += `
-                <tr>
-
-                    <td>${escapeHTML(product.id)}</td>
-
-                    <td>${imageHTML}</td>
-
-                    <td>${escapeHTML(product.name)}</td>
-
-                    <td>${escapeHTML(product.category)}</td>
-
-                    <td>${escapeHTML(product.type || "-")}</td>
-
-                    <td>${formatPrice(product.price)}</td>
-
-                    <td>
-
-                        <button
-                            class="btn btn-primary btn-small"
-                            onclick="editProduct(${Number(product.id)})">
-                            Edit
-                        </button>
-
-                        <button
-                            class="btn btn-danger btn-small"
-                            onclick="deleteProduct(${Number(product.id)})">
-                            Delete
-                        </button>
-
-                    </td>
-
-                </tr>
-            `;
-        });
+        );
 
 
     }catch(error){
 
-        console.error("Product loading error:",error);
+        console.error(
+            "Product loading error:",
+            error
+        );
+
+
+        document
+            .getElementById(
+                "serverProductCount"
+            )
+            .textContent =
+                "Server: ERROR";
+
+
+        document
+            .getElementById(
+                "manageServerCount"
+            )
+            .textContent =
+                "Server: ERROR";
+
 
         dashboardTable.innerHTML =
-            `<tr><td colspan="5" class="empty">
-                ${escapeHTML(error.message)}
-            </td></tr>`;
+            `<tr>
+                <td colspan="5" class="empty">
+                    ${escapeHTML(
+                        error.message
+                    )}
+                </td>
+            </tr>`;
+
 
         manageTable.innerHTML =
-            `<tr><td colspan="7" class="empty">
-                ${escapeHTML(error.message)}
-            </td></tr>`;
+            `<tr>
+                <td colspan="7" class="empty">
+                    ${escapeHTML(
+                        error.message
+                    )}
+                </td>
+            </tr>`;
+
     }
+
 }
 
 
@@ -1254,72 +1810,109 @@ async function loadProducts(){
 ============================================================ */
 
 document
-    .getElementById("productImageFile")
-    .addEventListener("change",function(){
+    .getElementById(
+        "productImageFile"
+    )
+    .addEventListener(
+        "change",
+        function(){
 
-        const file = this.files[0];
+            const file =
+                this.files[0];
 
-        if(!file){
-            return;
+
+            if(!file){
+
+                return;
+
+            }
+
+
+            const allowedTypes = [
+
+                "image/jpeg",
+                "image/png",
+                "image/webp",
+                "image/gif"
+
+            ];
+
+
+            if(
+                !allowedTypes.includes(
+                    file.type
+                )
+            ){
+
+                showMessage(
+                    "productMessage",
+                    "Please select JPG, PNG, WEBP or GIF.",
+                    "error"
+                );
+
+                this.value = "";
+
+                return;
+
+            }
+
+
+            if(
+                file.size >
+                8 * 1024 * 1024
+            ){
+
+                showMessage(
+                    "productMessage",
+                    "Image must be smaller than 8 MB.",
+                    "error"
+                );
+
+                this.value = "";
+
+                return;
+
+            }
+
+
+            document
+                .getElementById(
+                    "selectedFileName"
+                )
+                .textContent =
+                    "Selected: " +
+                    file.name;
+
+
+            const reader =
+                new FileReader();
+
+
+            reader.onload =
+                function(event){
+
+                    document
+                        .getElementById(
+                            "previewImage"
+                        )
+                        .src =
+                            event.target.result;
+
+
+                    document
+                        .getElementById(
+                            "imagePreview"
+                        )
+                        .style.display =
+                            "block";
+
+                };
+
+
+            reader.readAsDataURL(file);
+
         }
-
-
-        const allowedTypes = [
-            "image/jpeg",
-            "image/png",
-            "image/webp",
-            "image/gif"
-        ];
-
-
-        if(!allowedTypes.includes(file.type)){
-
-            showMessage(
-                "productMessage",
-                "Please select JPG, PNG, WEBP or GIF.",
-                "error"
-            );
-
-            this.value="";
-            return;
-        }
-
-
-        if(file.size > 8 * 1024 * 1024){
-
-            showMessage(
-                "productMessage",
-                "Image must be smaller than 8 MB.",
-                "error"
-            );
-
-            this.value="";
-            return;
-        }
-
-
-        document.getElementById("selectedFileName")
-            .textContent =
-            "Selected: " + file.name;
-
-
-        const reader = new FileReader();
-
-
-        reader.onload=function(event){
-
-            document.getElementById("previewImage")
-                .src =
-                event.target.result;
-
-            document.getElementById("imagePreview")
-                .style.display =
-                "block";
-        };
-
-
-        reader.readAsDataURL(file);
-    });
+    );
 
 
 /* ============================================================
@@ -1339,15 +1932,18 @@ async function uploadImage(){
 
 
     /*
-       No new image selected:
-       keep the current image.
+     No new image.
+     Keep current image.
     */
 
     if(!file){
 
-        return document.getElementById(
-            "productImage"
-        ).value || "";
+        return document
+            .getElementById(
+                "productImage"
+            )
+            .value || "";
+
     }
 
 
@@ -1355,17 +1951,24 @@ async function uploadImage(){
         new FormData();
 
 
-    formData.append("image",file);
+    formData.append(
+        "image",
+        file
+    );
 
 
-    document.getElementById("uploadStatus")
+    document
+        .getElementById(
+            "uploadStatus"
+        )
         .textContent =
-        "⏳ Uploading image...";
+            "⏳ Uploading image...";
 
 
     const response =
         await fetch(
-            API + "/api/upload-image",
+            API +
+            "/api/upload-image",
             {
                 method:"POST",
                 credentials:"include",
@@ -1374,41 +1977,58 @@ async function uploadImage(){
         );
 
 
-    if(response.status === 401){
+    if(
+        response.status === 401
+    ){
 
-        window.location.href="/admin-login";
+        window.location.href =
+            "/admin-login";
 
         return null;
+
     }
 
 
-    let data={};
+    let data = {};
 
 
     try{
-        data=await response.json();
+
+        data =
+            await response.json();
+
     }catch(error){
+
         throw new Error(
             "Image upload returned an invalid response."
         );
+
     }
 
 
-    if(!response.ok || !data.success){
+    if(
+        !response.ok ||
+        !data.success
+    ){
 
         throw new Error(
             data.message ||
             "Image upload failed."
         );
+
     }
 
 
-    document.getElementById("uploadStatus")
+    document
+        .getElementById(
+            "uploadStatus"
+        )
         .textContent =
-        "✅ Image uploaded successfully";
+            "✅ Image uploaded successfully";
 
 
     return data.image || "";
+
 }
 
 
@@ -1416,35 +2036,62 @@ async function uploadImage(){
    GET PRODUCT
 ============================================================ */
 
-async function getProduct(productId){
+async function getProduct(
+    productId
+){
 
     const response =
         await fetch(
-            API + "/api/products/" + productId,
+            API +
+            "/api/products/" +
+            encodeURIComponent(
+                productId
+            ) +
+            "?nocache=" +
+            cacheBuster(),
             {
-                credentials:"include"
+                credentials:"include",
+                cache:"no-store"
             }
         );
 
 
-    if(response.status === 401){
+    if(
+        response.status === 401
+    ){
 
-        window.location.href="/admin-login";
+        window.location.href =
+            "/admin-login";
 
-        throw new Error("Admin session expired.");
+        throw new Error(
+            "Admin session expired."
+        );
+
     }
 
 
     if(!response.ok){
 
-        let message="Product not found.";
+        let message =
+            "Product not found.";
+
 
         try{
-            const data=await response.json();
-            message=data.message || message;
+
+            const data =
+                await response.json();
+
+            message =
+                data.message ||
+                message;
+
         }catch(error){}
 
-        throw new Error(message);
+
+        throw new Error(
+            message
+        );
+
     }
 
 
@@ -1453,11 +2100,16 @@ async function getProduct(productId){
 
 
     if(!data.product){
-        throw new Error("Product data not found.");
+
+        throw new Error(
+            "Product data not found."
+        );
+
     }
 
 
     return data.product;
+
 }
 
 
@@ -1465,119 +2117,194 @@ async function getProduct(productId){
    EDIT PRODUCT
 ============================================================ */
 
-async function editProduct(productId){
+async function editProduct(
+    productId
+){
 
     try{
 
         const product =
-            await getProduct(productId);
+            await getProduct(
+                productId
+            );
 
 
-        document.getElementById("editingProductId")
+        document
+            .getElementById(
+                "editingProductId"
+            )
             .value =
-            product.id;
+                product.id;
 
 
-        document.getElementById("productName")
+        document
+            .getElementById(
+                "productName"
+            )
             .value =
-            product.name || "";
+                product.name || "";
 
 
-        document.getElementById("productCategory")
+        document
+            .getElementById(
+                "productCategory"
+            )
             .value =
-            product.category || "";
+                product.category || "";
 
 
-        document.getElementById("productType")
+        document
+            .getElementById(
+                "productType"
+            )
             .value =
-            product.type || "";
+                product.type || "";
 
 
-        document.getElementById("productPrice")
+        document
+            .getElementById(
+                "productPrice"
+            )
             .value =
-            product.price ?? "";
+                product.price ?? "";
 
 
-        document.getElementById("productStock")
+        document
+            .getElementById(
+                "productStock"
+            )
             .value =
-            product.stock ?? 0;
+                product.stock ?? 0;
 
 
-        document.getElementById("productCelebrity")
+        document
+            .getElementById(
+                "productCelebrity"
+            )
             .value =
-            product.celebrity || "";
+                product.celebrity || "";
 
 
-        document.getElementById("productImage")
+        document
+            .getElementById(
+                "productImage"
+            )
             .value =
-            product.image || "";
+                product.image || "";
 
 
-        document.getElementById("productImageFile")
-            .value="";
+        document
+            .getElementById(
+                "productImageFile"
+            )
+            .value =
+                "";
 
 
-        document.getElementById("uploadStatus")
-            .textContent="";
+        document
+            .getElementById(
+                "uploadStatus"
+            )
+            .textContent =
+                "";
 
 
         if(product.image){
 
-            document.getElementById("selectedFileName")
+            document
+                .getElementById(
+                    "selectedFileName"
+                )
                 .textContent =
-                "Current image is being used. Select a new image to replace it.";
+                    "Current image is being used. Select a new image to replace it.";
 
 
-            document.getElementById("previewImage")
+            document
+                .getElementById(
+                    "previewImage"
+                )
                 .src =
-                product.image;
+                    product.image;
 
 
-            document.getElementById("imagePreview")
+            document
+                .getElementById(
+                    "imagePreview"
+                )
                 .style.display =
-                "block";
+                    "block";
 
         }else{
 
-            document.getElementById("selectedFileName")
-                .textContent="";
+            document
+                .getElementById(
+                    "selectedFileName"
+                )
+                .textContent =
+                    "";
 
-            document.getElementById("imagePreview")
-                .style.display="none";
+
+            document
+                .getElementById(
+                    "imagePreview"
+                )
+                .style.display =
+                    "none";
+
         }
 
 
-        document.getElementById("productSubmitButton")
+        document
+            .getElementById(
+                "productSubmitButton"
+            )
             .textContent =
-            "💾 Save Changes";
+                "💾 Save Changes";
 
 
-        document.getElementById("cancelEditButton")
-            .classList.remove("hidden");
+        document
+            .getElementById(
+                "cancelEditButton"
+            )
+            .classList.remove(
+                "hidden"
+            );
 
 
         showSection(
             "products",
-            document.querySelectorAll(".nav-btn")[1]
+            document.querySelectorAll(
+                ".nav-btn"
+            )[1]
         );
 
 
         window.scrollTo({
+
             top:0,
+
             behavior:"smooth"
+
         });
 
 
     }catch(error){
 
-        console.error("Edit error:",error);
+        console.error(
+            "Edit error:",
+            error
+        );
+
 
         showMessage(
             "productMessage",
-            error.message || "Could not load product.",
+            error.message ||
+            "Could not load product.",
             "error"
         );
+
     }
+
 }
 
 
@@ -1587,49 +2314,93 @@ async function editProduct(productId){
 
 function resetProductForm(){
 
-    document.getElementById("productForm")
+    document
+        .getElementById(
+            "productForm"
+        )
         .reset();
 
 
-    document.getElementById("editingProductId")
-        .value="";
+    document
+        .getElementById(
+            "editingProductId"
+        )
+        .value =
+            "";
 
 
-    document.getElementById("productStock")
-        .value=10;
+    document
+        .getElementById(
+            "productStock"
+        )
+        .value =
+            10;
 
 
-    document.getElementById("productImage")
-        .value="";
+    document
+        .getElementById(
+            "productImage"
+        )
+        .value =
+            "";
 
 
-    document.getElementById("productImageFile")
-        .value="";
+    document
+        .getElementById(
+            "productImageFile"
+        )
+        .value =
+            "";
 
 
-    document.getElementById("selectedFileName")
-        .textContent="";
-
-
-    document.getElementById("uploadStatus")
-        .textContent="";
-
-
-    document.getElementById("imagePreview")
-        .style.display="none";
-
-
-    document.getElementById("previewImage")
-        .src="";
-
-
-    document.getElementById("productSubmitButton")
+    document
+        .getElementById(
+            "selectedFileName"
+        )
         .textContent =
-        "➕ Add Product";
+            "";
 
 
-    document.getElementById("cancelEditButton")
-        .classList.add("hidden");
+    document
+        .getElementById(
+            "uploadStatus"
+        )
+        .textContent =
+            "";
+
+
+    document
+        .getElementById(
+            "imagePreview"
+        )
+        .style.display =
+            "none";
+
+
+    document
+        .getElementById(
+            "previewImage"
+        )
+        .src =
+            "";
+
+
+    document
+        .getElementById(
+            "productSubmitButton"
+        )
+        .textContent =
+            "➕ Add Product";
+
+
+    document
+        .getElementById(
+            "cancelEditButton"
+        )
+        .classList.add(
+            "hidden"
+        );
+
 }
 
 
@@ -1640,6 +2411,7 @@ function resetProductForm(){
 function cancelEdit(){
 
     resetProductForm();
+
 }
 
 
@@ -1648,324 +2420,403 @@ function cancelEdit(){
 ============================================================ */
 
 document
-    .getElementById("productForm")
-    .addEventListener("submit",async function(event){
+    .getElementById(
+        "productForm"
+    )
+    .addEventListener(
+        "submit",
+        async function(event){
 
-        event.preventDefault();
-
-
-        const submitButton =
-            document.getElementById(
-                "productSubmitButton"
-            );
+            event.preventDefault();
 
 
-        const editingId =
-            document.getElementById(
-                "editingProductId"
-            ).value.trim();
-
-
-        try{
-
-            submitButton.disabled=true;
-
-            submitButton.textContent =
-                editingId
-                    ? "⏳ Saving Changes..."
-                    : "⏳ Adding Product...";
-
-
-            /* VALIDATE */
-
-            const name =
+            const submitButton =
                 document.getElementById(
-                    "productName"
+                    "productSubmitButton"
+                );
+
+
+            const editingId =
+                document.getElementById(
+                    "editingProductId"
                 ).value.trim();
-
-
-            const category =
-                document.getElementById(
-                    "productCategory"
-                ).value.trim();
-
-
-            const type =
-                document.getElementById(
-                    "productType"
-                ).value.trim();
-
-
-            const price =
-                Number(
-                    document.getElementById(
-                        "productPrice"
-                    ).value
-                );
-
-
-            const stockValue =
-                document.getElementById(
-                    "productStock"
-                ).value;
-
-
-            const stock =
-                stockValue === ""
-                    ? 0
-                    : Number(stockValue);
-
-
-            const celebrity =
-                document.getElementById(
-                    "productCelebrity"
-                ).value.trim();
-
-
-            if(!name){
-                throw new Error(
-                    "Product name is required."
-                );
-            }
-
-
-            if(!category){
-                throw new Error(
-                    "Product category is required."
-                );
-            }
-
-
-            if(!Number.isFinite(price) || price < 0){
-                throw new Error(
-                    "Please enter a valid price."
-                );
-            }
-
-
-            if(!Number.isInteger(stock) || stock < 0){
-                throw new Error(
-                    "Stock must be a whole number greater than or equal to 0."
-                );
-            }
-
-
-            /*
-               Upload only when a new image
-               was selected.
-            */
-
-            const image =
-                await uploadImage();
-
-
-            if(image === null){
-                return;
-            }
-
-
-            /*
-               IMPORTANT:
-               The JSON keys match the product
-               fields used by the dashboard.
-            */
-
-            const product = {
-
-                name:name,
-
-                category:category,
-
-                type:type,
-
-                price:price,
-
-                stock:stock,
-
-                celebrity:celebrity,
-
-                image:image
-
-            };
-
-
-            let url;
-            let method;
-
-
-            if(editingId){
-
-                url =
-                    API +
-                    "/api/products/" +
-                    encodeURIComponent(editingId);
-
-                method="PUT";
-
-            }else{
-
-                url =
-                    API +
-                    "/api/products";
-
-                method="POST";
-            }
-
-
-            console.log(
-                "Saving product:",
-                method,
-                url,
-                product
-            );
-
-
-            const response =
-                await fetch(
-                    url,
-                    {
-                        method:method,
-                        credentials:"include",
-                        headers:{
-                            "Content-Type":
-                                "application/json"
-                        },
-                        body:
-                            JSON.stringify(product)
-                    }
-                );
-
-
-            if(response.status === 401){
-
-                window.location.href="/admin-login";
-
-                return;
-            }
-
-
-            let data={};
 
 
             try{
 
-                data =
-                    await response.json();
+                submitButton.disabled =
+                    true;
+
+
+                submitButton.textContent =
+                    editingId
+                        ? "⏳ Saving Changes..."
+                        : "⏳ Adding Product...";
+
+
+                /* ------------------------------------------------
+                   FORM VALUES
+                ------------------------------------------------ */
+
+                const name =
+                    document.getElementById(
+                        "productName"
+                    ).value.trim();
+
+
+                const category =
+                    document.getElementById(
+                        "productCategory"
+                    ).value.trim();
+
+
+                const type =
+                    document.getElementById(
+                        "productType"
+                    ).value.trim();
+
+
+                const price =
+                    Number(
+                        document.getElementById(
+                            "productPrice"
+                        ).value
+                    );
+
+
+                const stockValue =
+                    document.getElementById(
+                        "productStock"
+                    ).value;
+
+
+                const stock =
+                    stockValue === ""
+                        ? 0
+                        : Number(
+                            stockValue
+                        );
+
+
+                const celebrity =
+                    document.getElementById(
+                        "productCelebrity"
+                    ).value.trim();
+
+
+                if(!name){
+
+                    throw new Error(
+                        "Product name is required."
+                    );
+
+                }
+
+
+                if(!category){
+
+                    throw new Error(
+                        "Product category is required."
+                    );
+
+                }
+
+
+                if(
+                    !Number.isFinite(
+                        price
+                    ) ||
+                    price < 0
+                ){
+
+                    throw new Error(
+                        "Please enter a valid price."
+                    );
+
+                }
+
+
+                if(
+                    !Number.isInteger(
+                        stock
+                    ) ||
+                    stock < 0
+                ){
+
+                    throw new Error(
+                        "Stock must be a whole number greater than or equal to 0."
+                    );
+
+                }
+
+
+                /* ------------------------------------------------
+                   IMAGE
+                ------------------------------------------------ */
+
+                const image =
+                    await uploadImage();
+
+
+                if(image === null){
+
+                    return;
+
+                }
+
+
+                /* ------------------------------------------------
+                   PRODUCT OBJECT
+                ------------------------------------------------ */
+
+                const product = {
+
+                    name:name,
+
+                    category:category,
+
+                    type:type,
+
+                    price:price,
+
+                    stock:stock,
+
+                    celebrity:celebrity,
+
+                    image:image
+
+                };
+
+
+                let url;
+
+                let method;
+
+
+                if(editingId){
+
+                    url =
+                        API +
+                        "/api/products/" +
+                        encodeURIComponent(
+                            editingId
+                        );
+
+                    method =
+                        "PUT";
+
+                }else{
+
+                    url =
+                        API +
+                        "/api/products";
+
+                    method =
+                        "POST";
+
+                }
+
+
+                console.log(
+                    "SENDING PRODUCT:",
+                    product
+                );
+
+
+                /* ------------------------------------------------
+                   SAVE
+                ------------------------------------------------ */
+
+                const response =
+                    await fetch(
+                        url,
+                        {
+                            method:method,
+                            credentials:"include",
+                            headers:{
+                                "Content-Type":
+                                    "application/json",
+                                "Accept":
+                                    "application/json"
+                            },
+                            body:
+                                JSON.stringify(
+                                    product
+                                )
+                        }
+                    );
+
+
+                if(
+                    response.status === 401
+                ){
+
+                    window.location.href =
+                        "/admin-login";
+
+                    return;
+
+                }
+
+
+                let data = {};
+
+
+                try{
+
+                    data =
+                        await response.json();
+
+                }catch(error){
+
+                    throw new Error(
+                        "Server returned an invalid response."
+                    );
+
+                }
+
+
+                console.log(
+                    "SERVER SAVE RESPONSE:",
+                    response.status,
+                    data
+                );
+
+
+                if(!response.ok){
+
+                    throw new Error(
+                        data.message ||
+                        data.error ||
+                        "The server could not save the product."
+                    );
+
+                }
+
+
+                if(
+                    data.success === false
+                ){
+
+                    throw new Error(
+                        data.message ||
+                        "Product was not saved."
+                    );
+
+                }
+
+
+                /* ------------------------------------------------
+                   SUCCESS
+                ------------------------------------------------ */
+
+                const serverCount =
+                    data.total_products;
+
+
+                showMessage(
+                    "productMessage",
+
+                    editingId
+
+                        ? "✅ Product updated successfully!"
+
+                        : "✅ Product added successfully!" +
+                          (
+                              serverCount !== undefined
+                                  ? " Server now has " +
+                                    serverCount +
+                                    " products."
+                                  : ""
+                          ),
+
+                    "success"
+                );
+
+
+                resetProductForm();
+
+
+                /*
+                 IMPORTANT:
+                 Reload directly from server.
+                */
+
+                await loadProducts(
+                    true
+                );
+
+
+                await loadStats();
+
 
             }catch(error){
 
-                throw new Error(
-                    "Server returned an invalid response."
+                console.error(
+                    "SAVE PRODUCT ERROR:",
+                    error
                 );
-            }
 
 
-            console.log(
-                "Save response:",
-                response.status,
-                data
-            );
+                showMessage(
+                    "productMessage",
 
+                    "❌ " +
+                    (
+                        error.message ||
+                        "Could not save product."
+                    ),
 
-            if(!response.ok){
-
-                throw new Error(
-                    data.message ||
-                    data.error ||
-                    "The server could not save the product."
+                    "error"
                 );
+
+
+            }finally{
+
+                submitButton.disabled =
+                    false;
+
+
+                if(
+                    !document
+                        .getElementById(
+                            "editingProductId"
+                        )
+                        .value
+                ){
+
+                    submitButton.textContent =
+                        "➕ Add Product";
+
+                }else{
+
+                    submitButton.textContent =
+                        "💾 Save Changes";
+
+                }
+
             }
 
-
-            if(data.success === false){
-
-                throw new Error(
-                    data.message ||
-                    "Product was not saved."
-                );
-            }
-
-
-            showMessage(
-                "productMessage",
-                data.message ||
-                (
-                    editingId
-                        ? "✅ Product updated successfully!"
-                        : "✅ Product added successfully!"
-                ),
-                "success"
-            );
-
-
-            resetProductForm();
-
-
-            await loadProducts();
-
-            await loadStats();
-
-
-        }catch(error){
-
-            console.error(
-                "SAVE PRODUCT ERROR:",
-                error
-            );
-
-
-            showMessage(
-                "productMessage",
-                "❌ " +
-                (
-                    error.message ||
-                    "Could not save product."
-                ),
-                "error"
-            );
-
-
-        }finally{
-
-            submitButton.disabled=false;
-
-
-            /*
-               Only restore Add Product text
-               if the form is no longer editing.
-            */
-
-            if(
-                !document.getElementById(
-                    "editingProductId"
-                ).value
-            ){
-
-                submitButton.textContent =
-                    "➕ Add Product";
-
-            }else{
-
-                submitButton.textContent =
-                    "💾 Save Changes";
-            }
         }
-
-    });
+    );
 
 
 /* ============================================================
    DELETE PRODUCT
 ============================================================ */
 
-async function deleteProduct(productId){
+async function deleteProduct(
+    productId
+){
 
     if(
         !confirm(
             "Are you sure you want to delete this product?"
         )
     ){
+
         return;
+
     }
 
 
@@ -1975,27 +2826,40 @@ async function deleteProduct(productId){
             await fetch(
                 API +
                 "/api/products/" +
-                encodeURIComponent(productId),
+                encodeURIComponent(
+                    productId
+                ),
                 {
                     method:"DELETE",
-                    credentials:"include"
+                    credentials:"include",
+                    headers:{
+                        "Accept":
+                            "application/json"
+                    }
                 }
             );
 
 
-        if(response.status === 401){
+        if(
+            response.status === 401
+        ){
 
-            window.location.href="/admin-login";
+            window.location.href =
+                "/admin-login";
 
             return;
+
         }
 
 
-        let data={};
+        let data = {};
 
 
         try{
-            data=await response.json();
+
+            data =
+                await response.json();
+
         }catch(error){}
 
 
@@ -2005,6 +2869,7 @@ async function deleteProduct(productId){
                 data.message ||
                 "Could not delete product."
             );
+
         }
 
 
@@ -2016,7 +2881,10 @@ async function deleteProduct(productId){
         );
 
 
-        await loadProducts();
+        await loadProducts(
+            true
+        );
+
 
         await loadStats();
 
@@ -2031,14 +2899,18 @@ async function deleteProduct(productId){
 
         showMessage(
             "productMessage",
+
             "❌ " +
             (
                 error.message ||
                 "Could not delete product."
             ),
+
             "error"
         );
+
     }
+
 }
 
 
@@ -2062,23 +2934,34 @@ async function loadOrders(){
 
         const response =
             await fetch(
-                API + "/api/admin/orders",
+                API +
+                "/api/admin/orders?nocache=" +
+                cacheBuster(),
                 {
-                    credentials:"include"
+                    credentials:"include",
+                    cache:"no-store"
                 }
             );
 
 
-        if(response.status === 401){
+        if(
+            response.status === 401
+        ){
 
-            window.location.href="/admin-login";
+            window.location.href =
+                "/admin-login";
 
             return;
+
         }
 
 
         if(!response.ok){
-            throw new Error("Could not load orders.");
+
+            throw new Error(
+                "Could not load orders."
+            );
+
         }
 
 
@@ -2087,93 +2970,132 @@ async function loadOrders(){
 
 
         const orders =
-            Array.isArray(data.orders)
-                ? data.orders
-                : [];
+            Array.isArray(
+                data.orders
+            )
+            ? data.orders
+            : [];
 
 
-        table.innerHTML="";
+        table.innerHTML =
+            "";
 
 
-        if(orders.length===0){
+        if(
+            orders.length === 0
+        ){
 
             table.innerHTML =
                 '<tr><td colspan="7" class="empty">No orders found.</td></tr>';
 
             return;
+
         }
 
 
-        orders.forEach(function(order){
+        orders.forEach(
+            function(order){
 
-            table.innerHTML += `
-                <tr>
+                table.innerHTML += `
 
-                    <td>#${escapeHTML(order.id)}</td>
+                    <tr>
 
-                    <td>
-                        ${escapeHTML(
-                            order.customer_name || "Guest"
-                        )}
-                    </td>
-
-                    <td>
-                        ${escapeHTML(
-                            order.customer_email || "-"
-                        )}
-                    </td>
-
-                    <td>
-                        ${formatPrice(order.total)}
-                    </td>
-
-                    <td>
-                        <span class="status">
-                            ${escapeHTML(
-                                order.status || "Pending"
+                        <td>
+                            #${escapeHTML(
+                                order.id
                             )}
-                        </span>
-                    </td>
+                        </td>
 
-                    <td>
-                        ${formatDate(order.created_at)}
-                    </td>
+                        <td>
+                            ${escapeHTML(
+                                order.customer_name ||
+                                "Guest"
+                            )}
+                        </td>
 
-                    <td>
+                        <td>
+                            ${escapeHTML(
+                                order.customer_email ||
+                                "-"
+                            )}
+                        </td>
 
-                        <details>
+                        <td>
+                            ${formatPrice(
+                                order.total
+                            )}
+                        </td>
 
-                            <summary>View</summary>
+                        <td>
 
-                            <div style="
-                                margin-top:8px;
-                                max-width:350px;
-                                white-space:pre-wrap;
-                                word-break:break-word;
-                            ">
+                            <span class="status">
                                 ${escapeHTML(
-                                    order.order_data || ""
+                                    order.status ||
+                                    "Pending"
                                 )}
-                            </div>
+                            </span>
 
-                        </details>
+                        </td>
 
-                    </td>
+                        <td>
+                            ${formatDate(
+                                order.created_at
+                            )}
+                        </td>
 
-                </tr>
-            `;
-        });
+                        <td>
+
+                            <details>
+
+                                <summary>
+                                    View
+                                </summary>
+
+                                <div
+                                    style="
+                                        margin-top:8px;
+                                        max-width:350px;
+                                        white-space:pre-wrap;
+                                        word-break:break-word;
+                                    "
+                                >
+                                    ${escapeHTML(
+                                        order.order_data ||
+                                        ""
+                                    )}
+                                </div>
+
+                            </details>
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+            }
+        );
 
 
     }catch(error){
 
-        console.error("Orders error:",error);
+        console.error(
+            "Orders error:",
+            error
+        );
+
 
         table.innerHTML =
-            `<tr><td colspan="7" class="empty">
-                ${escapeHTML(error.message)}
-            </td></tr>`;
+            `<tr>
+                <td colspan="7" class="empty">
+                    ${escapeHTML(
+                        error.message
+                    )}
+                </td>
+            </tr>`;
+
     }
+
 }
 
 
@@ -2197,25 +3119,34 @@ async function loadCustomers(){
 
         const response =
             await fetch(
-                API + "/api/admin/customers",
+                API +
+                "/api/admin/customers?nocache=" +
+                cacheBuster(),
                 {
-                    credentials:"include"
+                    credentials:"include",
+                    cache:"no-store"
                 }
             );
 
 
-        if(response.status === 401){
+        if(
+            response.status === 401
+        ){
 
-            window.location.href="/admin-login";
+            window.location.href =
+                "/admin-login";
 
             return;
+
         }
 
 
         if(!response.ok){
+
             throw new Error(
                 "Could not load customers."
             );
+
         }
 
 
@@ -2224,47 +3155,66 @@ async function loadCustomers(){
 
 
         const customers =
-            Array.isArray(data.customers)
-                ? data.customers
-                : [];
+            Array.isArray(
+                data.customers
+            )
+            ? data.customers
+            : [];
 
 
-        table.innerHTML="";
+        table.innerHTML =
+            "";
 
 
-        if(customers.length===0){
+        if(
+            customers.length === 0
+        ){
 
             table.innerHTML =
                 '<tr><td colspan="4" class="empty">No customers registered yet.</td></tr>';
 
             return;
+
         }
 
 
-        customers.forEach(function(customer){
+        customers.forEach(
+            function(customer){
 
-            table.innerHTML += `
-                <tr>
+                table.innerHTML += `
 
-                    <td>
-                        ${escapeHTML(customer.id)}
-                    </td>
+                    <tr>
 
-                    <td>
-                        ${escapeHTML(customer.name)}
-                    </td>
+                        <td>
+                            ${escapeHTML(
+                                customer.id
+                            )}
+                        </td>
 
-                    <td>
-                        ${escapeHTML(customer.email)}
-                    </td>
+                        <td>
+                            ${escapeHTML(
+                                customer.name
+                            )}
+                        </td>
 
-                    <td>
-                        ${formatDate(customer.created_at)}
-                    </td>
+                        <td>
+                            ${escapeHTML(
+                                customer.email
+                            )}
+                        </td>
 
-                </tr>
-            `;
-        });
+                        <td>
+                            ${formatDate(
+                                customer.created_at
+                            )}
+                        </td>
+
+                    </tr>
+
+                `;
+
+            }
+        );
 
 
     }catch(error){
@@ -2276,10 +3226,16 @@ async function loadCustomers(){
 
 
         table.innerHTML =
-            `<tr><td colspan="4" class="empty">
-                ${escapeHTML(error.message)}
-            </td></tr>`;
+            `<tr>
+                <td colspan="4" class="empty">
+                    ${escapeHTML(
+                        error.message
+                    )}
+                </td>
+            </tr>`;
+
     }
+
 }
 
 
@@ -2292,7 +3248,8 @@ async function logoutAdmin(){
     try{
 
         await fetch(
-            API + "/api/admin/logout",
+            API +
+            "/api/admin/logout",
             {
                 method:"POST",
                 credentials:"include"
@@ -2305,10 +3262,13 @@ async function logoutAdmin(){
             "Logout error:",
             error
         );
+
     }
 
 
-    window.location.href="/admin-login";
+    window.location.href =
+        "/admin-login";
+
 }
 
 
@@ -2323,13 +3283,18 @@ async function initializeDashboard(){
 
 
     if(!loggedIn){
+
         return;
+
     }
 
 
     await loadStats();
 
-    await loadProducts();
+    await loadProducts(
+        true
+    );
+
 }
 
 
@@ -2338,4 +3303,5 @@ initializeDashboard();
 </script>
 
 </body>
-        </html>
+
+</html>
