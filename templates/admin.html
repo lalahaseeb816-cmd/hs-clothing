@@ -1,342 +1,447 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>H&S Clothing | Admin Dashboard</title>
 
-<style>
-    * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-        font-family: Arial, sans-serif;
-    }
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    body {
-        background: #f5f5f5;
-        color: #111;
-    }
+    <title>H&S Clothing | Admin Dashboard</title>
 
-    .sidebar {
-        position: fixed;
-        left: 0;
-        top: 0;
-        width: 240px;
-        height: 100vh;
-        background: #111;
-        color: white;
-        padding: 30px 20px;
-        z-index: 1000;
-    }
+    <style>
 
-    .logo {
-        font-size: 23px;
-        font-weight: bold;
-        margin-bottom: 40px;
-        text-align: center;
-    }
-
-    .sidebar button {
-        width: 100%;
-        padding: 14px;
-        margin-bottom: 10px;
-        background: transparent;
-        color: white;
-        border: none;
-        text-align: left;
-        cursor: pointer;
-        font-size: 15px;
-        border-radius: 5px;
-    }
-
-    .sidebar button:hover,
-    .sidebar button.active {
-        background: #333;
-    }
-
-    .main {
-        margin-left: 240px;
-        padding: 30px;
-    }
-
-    .header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 30px;
-        gap: 15px;
-    }
-
-    .header h1 {
-        font-size: 30px;
-    }
-
-    .admin-user {
-        color: #666;
-        font-size: 14px;
-        margin-top: 5px;
-    }
-
-    .logout {
-        background: #111;
-        color: white;
-        border: none;
-        padding: 11px 20px;
-        cursor: pointer;
-        border-radius: 5px;
-        font-weight: bold;
-    }
-
-    .logout:hover {
-        background: #333;
-    }
-
-    .stats {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 20px;
-        margin-bottom: 30px;
-    }
-
-    .card {
-        background: white;
-        padding: 25px;
-        border-radius: 8px;
-        box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
-    }
-
-    .card h3 {
-        font-size: 14px;
-        color: #666;
-        margin-bottom: 10px;
-    }
-
-    .card p {
-        font-size: 28px;
-        font-weight: bold;
-    }
-
-    .section {
-        background: white;
-        padding: 25px;
-        margin-bottom: 25px;
-        border-radius: 8px;
-        box-shadow: 0 3px 15px rgba(0, 0, 0, 0.05);
-    }
-
-    .section h2 {
-        margin-bottom: 20px;
-    }
-
-    .section-description {
-        color: #666;
-        margin-bottom: 20px;
-    }
-
-    .table-container {
-        width: 100%;
-        overflow-x: auto;
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        min-width: 600px;
-    }
-
-    th,
-    td {
-        padding: 14px;
-        border-bottom: 1px solid #ddd;
-        text-align: left;
-    }
-
-    th {
-        background: #f5f5f5;
-        font-size: 14px;
-    }
-
-    td {
-        font-size: 14px;
-    }
-
-    .empty {
-        text-align: center;
-        padding: 30px;
-        color: #777;
-    }
-
-    .form-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 15px;
-        max-width: 700px;
-    }
-
-    .form-group {
-        display: flex;
-        flex-direction: column;
-        gap: 7px;
-    }
-
-    .form-group.full {
-        grid-column: 1 / -1;
-    }
-
-    .form-group label {
-        font-size: 14px;
-        font-weight: bold;
-    }
-
-    .form-group input,
-    .form-group select {
-        padding: 12px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        font-size: 15px;
-        background: white;
-    }
-
-    .form-actions {
-        grid-column: 1 / -1;
-        display: flex;
-        gap: 10px;
-    }
-
-    .btn {
-        padding: 12px 18px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-weight: bold;
-    }
-
-    .btn-primary {
-        background: #111;
-        color: white;
-    }
-
-    .btn-primary:hover {
-        background: #333;
-    }
-
-    .btn-secondary {
-        background: #ddd;
-        color: #111;
-    }
-
-    .btn-danger {
-        background: #b00020;
-        color: white;
-    }
-
-    .btn-small {
-        padding: 7px 11px;
-        font-size: 12px;
-        margin-right: 5px;
-        margin-bottom: 4px;
-    }
-
-    .message {
-        margin-top: 15px;
-        padding: 12px;
-        border-radius: 5px;
-        display: none;
-    }
-
-    .message.success {
-        display: block;
-        background: #e8f5e9;
-        color: #1b5e20;
-    }
-
-    .message.error {
-        display: block;
-        background: #ffebee;
-        color: #b71c1c;
-    }
-
-    .status {
-        display: inline-block;
-        padding: 5px 9px;
-        border-radius: 20px;
-        background: #eee;
-        font-size: 12px;
-        font-weight: bold;
-    }
-
-    .refresh-btn {
-        margin-bottom: 20px;
-    }
-
-    .hidden {
-        display: none !important;
-    }
-
-    .loading {
-        text-align: center;
-        padding: 25px;
-        color: #777;
-    }
-
-    @media (max-width: 1000px) {
-        .stats {
-            grid-template-columns: repeat(2, 1fr);
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
         }
-    }
 
-    @media (max-width: 700px) {
+        body {
+            background: #f5f5f5;
+            color: #111;
+        }
+
         .sidebar {
-            position: relative;
-            width: 100%;
-            height: auto;
-            padding: 20px 15px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 240px;
+            height: 100vh;
+            background: #111;
+            color: white;
+            padding: 30px 20px;
+            z-index: 1000;
         }
 
         .logo {
-            margin-bottom: 20px;
+            font-size: 23px;
+            font-weight: bold;
+            margin-bottom: 40px;
+            text-align: center;
         }
 
         .sidebar button {
-            display: inline-block;
-            width: auto;
-            margin-right: 5px;
-            padding: 10px 12px;
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 10px;
+            background: transparent;
+            color: white;
+            border: none;
+            text-align: left;
+            cursor: pointer;
+            font-size: 15px;
+            border-radius: 5px;
+        }
+
+        .sidebar button:hover,
+        .sidebar button.active {
+            background: #333;
         }
 
         .main {
-            margin-left: 0;
-            padding: 15px;
+            margin-left: 240px;
+            padding: 30px;
         }
 
         .header {
-            flex-direction: column;
-            align-items: flex-start;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            gap: 15px;
         }
 
         .header h1 {
-            font-size: 25px;
+            font-size: 30px;
+        }
+
+        .admin-user {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .logout {
+            background: #111;
+            color: white;
+            border: none;
+            padding: 11px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .logout:hover {
+            background: #333;
         }
 
         .stats {
-            grid-template-columns: 1fr;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
         }
 
-        .form-grid {
-            grid-template-columns: 1fr;
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
         }
 
-        .form-group.full,
-        .form-actions {
-            grid-column: auto;
+        .card h3 {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            font-size: 28px;
+            font-weight: bold;
         }
 
         .section {
-            padding: 18px;
+            background: white;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.05);
         }
-    }
-</style>
 
-</head><body><!-- SIDEBAR -->
+        .section h2 {
+            margin-bottom: 20px;
+        }
+
+        .section-description {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 650px;
+        }
+
+        th,
+        td {
+            padding: 14px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #f5f5f5;
+            font-size: 14px;
+        }
+
+        td {
+            font-size: 14px;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 30px;
+            color: #777;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            max-width: 800px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 15px;
+            background: white;
+        }
+
+        /* IMAGE UPLOAD */
+
+        .image-upload-box {
+            border: 2px dashed #bbb;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            background: #fafafa;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .image-upload-box:hover {
+            border-color: #111;
+            background: #f2f2f2;
+        }
+
+        .image-upload-box input {
+            display: none;
+        }
+
+        .upload-icon {
+            font-size: 35px;
+            margin-bottom: 8px;
+        }
+
+        .upload-text {
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        .upload-subtext {
+            margin-top: 6px;
+            color: #777;
+            font-size: 13px;
+        }
+
+        .image-preview {
+            display: none;
+            margin-top: 15px;
+        }
+
+        .image-preview img {
+            width: 180px;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .selected-file {
+            margin-top: 8px;
+            color: #555;
+            font-size: 13px;
+            word-break: break-word;
+        }
+
+        .form-actions {
+            grid-column: 1 / -1;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background: #111;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #333;
+        }
+
+        .btn-primary:disabled {
+            background: #777;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #ddd;
+            color: #111;
+        }
+
+        .btn-danger {
+            background: #b00020;
+            color: white;
+        }
+
+        .btn-small {
+            padding: 7px 11px;
+            font-size: 12px;
+            margin-right: 5px;
+            margin-bottom: 4px;
+        }
+
+        .message {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .message.success {
+            display: block;
+            background: #e8f5e9;
+            color: #1b5e20;
+        }
+
+        .message.error {
+            display: block;
+            background: #ffebee;
+            color: #b71c1c;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 20px;
+            background: #eee;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .refresh-btn {
+            margin-bottom: 20px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 25px;
+            color: #777;
+        }
+
+        .product-thumb {
+            width: 55px;
+            height: 55px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            background: #eee;
+        }
+
+        .upload-status {
+            margin-top: 10px;
+            font-size: 13px;
+            color: #555;
+        }
+
+        @media (max-width: 1000px) {
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+        }
+
+        @media (max-width: 700px) {
+
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+                padding: 20px 15px;
+            }
+
+            .logo {
+                margin-bottom: 20px;
+            }
+
+            .sidebar button {
+                display: inline-block;
+                width: auto;
+                margin-right: 5px;
+                padding: 10px 12px;
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 15px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header h1 {
+                font-size: 25px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full,
+            .form-actions {
+                grid-column: auto;
+            }
+
+            .section {
+                padding: 18px;
+            }
+
+            .image-preview img {
+                width: 150px;
+                height: 150px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+
+<!-- ============================================================
+     SIDEBAR
+============================================================ -->
 
 <div class="sidebar">
 
@@ -344,71 +449,125 @@
         H&S CLOTHING
     </div>
 
-    <button class="nav-btn active" onclick="showSection('dashboard', this)">
+    <button
+        class="nav-btn active"
+        onclick="showSection('dashboard', this)"
+    >
         📊 Dashboard
     </button>
 
-    <button class="nav-btn" onclick="showSection('products', this)">
+    <button
+        class="nav-btn"
+        onclick="showSection('products', this)"
+    >
         👕 Products
     </button>
 
-    <button class="nav-btn" onclick="showSection('orders', this)">
+    <button
+        class="nav-btn"
+        onclick="showSection('orders', this)"
+    >
         📦 Orders
     </button>
 
-    <button class="nav-btn" onclick="showSection('customers', this)">
+    <button
+        class="nav-btn"
+        onclick="showSection('customers', this)"
+    >
         👤 Customers
     </button>
 
 </div>
 
 
-<!-- MAIN -->
+<!-- ============================================================
+     MAIN
+============================================================ -->
 
 <div class="main">
+
 
     <div class="header">
 
         <div>
-            <h1>Admin Dashboard</h1>
-            <div class="admin-user" id="adminUsername">
+
+            <h1>
+                Admin Dashboard
+            </h1>
+
+            <div
+                class="admin-user"
+                id="adminUsername"
+            >
                 Checking admin session...
             </div>
+
         </div>
 
-        <button class="logout" onclick="logoutAdmin()">
+        <button
+            class="logout"
+            onclick="logoutAdmin()"
+        >
             Logout
         </button>
 
     </div>
 
 
-    <!-- =========================
+    <!-- ========================================================
          DASHBOARD
-    ========================== -->
+    ========================================================= -->
 
     <div id="dashboard">
 
         <div class="stats">
 
             <div class="card">
-                <h3>Total Products</h3>
-                <p id="productCount">0</p>
+
+                <h3>
+                    Total Products
+                </h3>
+
+                <p id="productCount">
+                    0
+                </p>
+
             </div>
 
             <div class="card">
-                <h3>Total Orders</h3>
-                <p id="orderCount">0</p>
+
+                <h3>
+                    Total Orders
+                </h3>
+
+                <p id="orderCount">
+                    0
+                </p>
+
             </div>
 
             <div class="card">
-                <h3>Total Customers</h3>
-                <p id="customerCount">0</p>
+
+                <h3>
+                    Total Customers
+                </h3>
+
+                <p id="customerCount">
+                    0
+                </p>
+
             </div>
 
             <div class="card">
-                <h3>Total Sales</h3>
-                <p id="salesTotal">₹0</p>
+
+                <h3>
+                    Total Sales
+                </h3>
+
+                <p id="salesTotal">
+                    ₹0
+                </p>
+
             </div>
 
         </div>
@@ -416,11 +575,14 @@
 
         <div class="section">
 
-            <h2>Products</h2>
+            <h2>
+                Products
+            </h2>
 
             <button
                 class="btn btn-secondary refresh-btn"
-                onclick="loadProducts()">
+                onclick="loadProducts()"
+            >
                 🔄 Refresh Products
             </button>
 
@@ -429,13 +591,17 @@
                 <table>
 
                     <thead>
+
                         <tr>
+
                             <th>ID</th>
                             <th>Product</th>
                             <th>Category</th>
                             <th>Type</th>
                             <th>Price</th>
+
                         </tr>
+
                     </thead>
 
                     <tbody id="dashboardProductsTable">
@@ -450,58 +616,95 @@
     </div>
 
 
-    <!-- =========================
+    <!-- ========================================================
          PRODUCTS
-    ========================== -->
+    ========================================================= -->
 
-    <div id="products" class="section hidden">
+    <div
+        id="products"
+        class="section hidden"
+    >
 
-        <h2>Manage Products</h2>
+        <h2>
+            Manage Products
+        </h2>
 
         <p class="section-description">
             Add, edit or delete products from your H&S Clothing store.
         </p>
 
+
         <form id="productForm">
 
-            <input type="hidden" id="editingProductId">
+            <input
+                type="hidden"
+                id="editingProductId"
+            >
+
 
             <div class="form-grid">
 
+
+                <!-- PRODUCT NAME -->
+
                 <div class="form-group">
-                    <label for="productName">Product Name</label>
+
+                    <label for="productName">
+                        Product Name
+                    </label>
 
                     <input
                         type="text"
                         id="productName"
                         placeholder="Product Name"
-                        required>
+                        required
+                    >
+
                 </div>
 
 
+                <!-- CATEGORY -->
+
                 <div class="form-group">
-                    <label for="productCategory">Category</label>
+
+                    <label for="productCategory">
+                        Category
+                    </label>
 
                     <input
                         type="text"
                         id="productCategory"
-                        placeholder="Men / Women"
-                        required>
+                        placeholder="Men / Women / Accessories"
+                        required
+                    >
+
                 </div>
 
 
+                <!-- TYPE -->
+
                 <div class="form-group">
-                    <label for="productType">Type</label>
+
+                    <label for="productType">
+                        Type
+                    </label>
 
                     <input
                         type="text"
                         id="productType"
-                        placeholder="Formal / Casual / Streetwear">
+                        placeholder="Formal / Casual / Streetwear"
+                    >
+
                 </div>
 
 
+                <!-- PRICE -->
+
                 <div class="form-group">
-                    <label for="productPrice">Price</label>
+
+                    <label for="productPrice">
+                        Price
+                    </label>
 
                     <input
                         type="number"
@@ -509,26 +712,128 @@
                         placeholder="Price"
                         min="0"
                         step="0.01"
-                        required>
+                        required
+                    >
+
                 </div>
 
 
-                <div class="form-group full">
-                    <label for="productImage">Image URL</label>
+                <!-- STOCK -->
+
+                <div class="form-group">
+
+                    <label for="productStock">
+                        Stock
+                    </label>
 
                     <input
-                        type="url"
-                        id="productImage"
-                        placeholder="https://example.com/image.jpg">
+                        type="number"
+                        id="productStock"
+                        placeholder="Stock quantity"
+                        min="0"
+                        value="10"
+                    >
+
                 </div>
 
+
+                <!-- CELEBRITY -->
+
+                <div class="form-group">
+
+                    <label for="productCelebrity">
+                        Celebrity / Style
+                    </label>
+
+                    <input
+                        type="text"
+                        id="productCelebrity"
+                        placeholder="Celebrity Inspired"
+                    >
+
+                </div>
+
+
+                <!-- IMAGE UPLOAD -->
+
+                <div class="form-group full">
+
+                    <label>
+                        Product Image
+                    </label>
+
+
+                    <label
+                        class="image-upload-box"
+                        for="productImageFile"
+                    >
+
+                        <div class="upload-icon">
+                            📸
+                        </div>
+
+                        <div class="upload-text">
+                            Choose Image From Gallery
+                        </div>
+
+                        <div class="upload-subtext">
+                            Tap here to select a JPG, PNG, WEBP or GIF
+                        </div>
+
+                        <input
+                            type="file"
+                            id="productImageFile"
+                            accept="image/jpeg,image/png,image/webp,image/gif"
+                        >
+
+                    </label>
+
+
+                    <div
+                        class="selected-file"
+                        id="selectedFileName"
+                    ></div>
+
+
+                    <div
+                        class="image-preview"
+                        id="imagePreview"
+                    >
+
+                        <img
+                            id="previewImage"
+                            src=""
+                            alt="Image Preview"
+                        >
+
+                    </div>
+
+
+                    <div
+                        class="upload-status"
+                        id="uploadStatus"
+                    ></div>
+
+
+                    <!-- Hidden image URL used by the API -->
+
+                    <input
+                        type="hidden"
+                        id="productImage"
+                    >
+
+                </div>
+
+
+                <!-- BUTTONS -->
 
                 <div class="form-actions">
 
                     <button
                         type="submit"
                         class="btn btn-primary"
-                        id="productSubmitButton">
+                        id="productSubmitButton"
+                    >
                         ➕ Add Product
                     </button>
 
@@ -536,7 +841,8 @@
                         type="button"
                         class="btn btn-secondary hidden"
                         id="cancelEditButton"
-                        onclick="cancelEdit()">
+                        onclick="cancelEdit()"
+                    >
                         Cancel Edit
                     </button>
 
@@ -546,19 +852,33 @@
 
         </form>
 
-        <div id="productMessage" class="message"></div>
+
+        <div
+            id="productMessage"
+            class="message"
+        ></div>
 
 
-        <hr style="margin:30px 0;border:0;border-top:1px solid #ddd;">
+        <hr
+            style="
+                margin:30px 0;
+                border:0;
+                border-top:1px solid #ddd;
+            "
+        >
 
 
-        <h2>All Products</h2>
+        <h2>
+            All Products
+        </h2>
 
         <button
             class="btn btn-secondary refresh-btn"
-            onclick="loadProducts()">
+            onclick="loadProducts()"
+        >
             🔄 Refresh
         </button>
+
 
         <div class="table-container">
 
@@ -567,12 +887,15 @@
                 <thead>
 
                     <tr>
+
                         <th>ID</th>
+                        <th>Image</th>
                         <th>Product</th>
                         <th>Category</th>
                         <th>Type</th>
                         <th>Price</th>
                         <th>Actions</th>
+
                     </tr>
 
                 </thead>
@@ -587,13 +910,18 @@
     </div>
 
 
-    <!-- =========================
+    <!-- ========================================================
          ORDERS
-    ========================== -->
+    ========================================================= -->
 
-    <div id="orders" class="section hidden">
+    <div
+        id="orders"
+        class="section hidden"
+    >
 
-        <h2>Orders</h2>
+        <h2>
+            Orders
+        </h2>
 
         <p class="section-description">
             All customer orders are displayed below.
@@ -601,7 +929,8 @@
 
         <button
             class="btn btn-secondary refresh-btn"
-            onclick="loadOrders()">
+            onclick="loadOrders()"
+        >
             🔄 Refresh Orders
         </button>
 
@@ -612,6 +941,7 @@
                 <thead>
 
                     <tr>
+
                         <th>Order ID</th>
                         <th>Customer</th>
                         <th>Email</th>
@@ -619,6 +949,7 @@
                         <th>Status</th>
                         <th>Date</th>
                         <th>Order Data</th>
+
                     </tr>
 
                 </thead>
@@ -633,13 +964,18 @@
     </div>
 
 
-    <!-- =========================
+    <!-- ========================================================
          CUSTOMERS
-    ========================== -->
+    ========================================================= -->
 
-    <div id="customers" class="section hidden">
+    <div
+        id="customers"
+        class="section hidden"
+    >
 
-        <h2>Customers</h2>
+        <h2>
+            Customers
+        </h2>
 
         <p class="section-description">
             Registered customers on your H&S Clothing website.
@@ -647,7 +983,8 @@
 
         <button
             class="btn btn-secondary refresh-btn"
-            onclick="loadCustomers()">
+            onclick="loadCustomers()"
+        >
             🔄 Refresh Customers
         </button>
 
@@ -658,10 +995,12 @@
                 <thead>
 
                     <tr>
+
                         <th>ID</th>
                         <th>Name</th>
                         <th>Email</th>
                         <th>Registered</th>
+
                     </tr>
 
                 </thead>
@@ -680,172 +1019,203 @@
 
 <script>
 
-    /*
-    ============================================================
-    H&S CLOTHING ADMIN DASHBOARD
-    ============================================================
 
-    This dashboard uses the SAME Flask server.
+// ============================================================
+// CONFIG
+// ============================================================
 
-    API = ""
-
-    Therefore these requests automatically use:
-    https://your-render-site.onrender.com/api/...
-
-    No localhost is used.
-    ============================================================
-    */
-
-    const API = "";
+const API = "";
 
 
-    /* ============================================================
-       HELPER
-    ============================================================ */
+// ============================================================
+// HELPER
+// ============================================================
 
-    function escapeHTML(value) {
+function escapeHTML(value) {
 
-        if (value === null || value === undefined) {
-            return "";
-        }
-
-        return String(value)
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
+    if (
+        value === null ||
+        value === undefined
+    ) {
+        return "";
     }
 
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
 
-    function formatPrice(value) {
 
-        const number = Number(value || 0);
+function formatPrice(value) {
 
-        return "₹" + number.toLocaleString("en-IN", {
+    const number = Number(
+        value || 0
+    );
+
+    return "₹" + number.toLocaleString(
+        "en-IN",
+        {
             maximumFractionDigits: 2
+        }
+    );
+}
+
+
+function formatDate(value) {
+
+    if (!value) {
+        return "-";
+    }
+
+    const date = new Date(
+        value.replace(" ", "T")
+    );
+
+    if (isNaN(date.getTime())) {
+        return escapeHTML(value);
+    }
+
+    return date.toLocaleString(
+        "en-IN"
+    );
+}
+
+
+// ============================================================
+// MESSAGE
+// ============================================================
+
+function showMessage(
+    elementId,
+    message,
+    type
+) {
+
+    const element =
+        document.getElementById(elementId);
+
+    element.textContent = message;
+
+    element.className =
+        "message " + type;
+
+    setTimeout(() => {
+
+        element.className =
+            "message";
+
+    }, 4000);
+}
+
+
+// ============================================================
+// SECTION NAVIGATION
+// ============================================================
+
+function showSection(
+    sectionId,
+    button
+) {
+
+    const sections = [
+        "dashboard",
+        "products",
+        "orders",
+        "customers"
+    ];
+
+    sections.forEach(id => {
+
+        const section =
+            document.getElementById(id);
+
+        if (section) {
+
+            section.classList.add(
+                "hidden"
+            );
+
+        }
+
+    });
+
+
+    const selectedSection =
+        document.getElementById(sectionId);
+
+    if (selectedSection) {
+
+        selectedSection.classList.remove(
+            "hidden"
+        );
+
+    }
+
+
+    document
+        .querySelectorAll(".nav-btn")
+        .forEach(btn => {
+
+            btn.classList.remove(
+                "active"
+            );
+
         });
-    }
 
 
-    function formatDate(value) {
+    if (button) {
 
-        if (!value) {
-            return "-";
-        }
-
-        const date = new Date(value.replace(" ", "T"));
-
-        if (isNaN(date.getTime())) {
-            return escapeHTML(value);
-        }
-
-        return date.toLocaleString("en-IN");
-    }
-
-
-    /* ============================================================
-       SHOW MESSAGE
-    ============================================================ */
-
-    function showMessage(elementId, message, type) {
-
-        const element = document.getElementById(elementId);
-
-        element.textContent = message;
-
-        element.className = "message " + type;
-
-        setTimeout(() => {
-
-            element.className = "message";
-
-        }, 4000);
-    }
-
-
-    /* ============================================================
-       SECTION NAVIGATION
-    ============================================================ */
-
-    function showSection(sectionId, button) {
-
-        const sections = [
-            "dashboard",
-            "products",
-            "orders",
-            "customers"
-        ];
-
-        sections.forEach(id => {
-
-            const section = document.getElementById(id);
-
-            if (section) {
-                section.classList.add("hidden");
-            }
-
-        });
-
-
-        const selectedSection =
-            document.getElementById(sectionId);
-
-        if (selectedSection) {
-            selectedSection.classList.remove("hidden");
-        }
-
-
-        document.querySelectorAll(".nav-btn").forEach(btn => {
-            btn.classList.remove("active");
-        });
-
-
-        if (button) {
-            button.classList.add("active");
-        }
-
-
-        if (sectionId === "dashboard") {
-
-            loadStats();
-            loadProducts();
-
-        }
-
-
-        if (sectionId === "products") {
-
-            loadProducts();
-
-        }
-
-
-        if (sectionId === "orders") {
-
-            loadOrders();
-
-        }
-
-
-        if (sectionId === "customers") {
-
-            loadCustomers();
-
-        }
+        button.classList.add(
+            "active"
+        );
 
     }
 
 
-    /* ============================================================
-       CHECK ADMIN SESSION
-    ============================================================ */
+    if (sectionId === "dashboard") {
 
-    async function checkAdminSession() {
+        loadStats();
+        loadProducts();
 
-        try {
+    }
 
-            const response = await fetch(
+
+    if (sectionId === "products") {
+
+        loadProducts();
+
+    }
+
+
+    if (sectionId === "orders") {
+
+        loadOrders();
+
+    }
+
+
+    if (sectionId === "customers") {
+
+        loadCustomers();
+
+    }
+
+}
+
+
+// ============================================================
+// ADMIN SESSION
+// ============================================================
+
+async function checkAdminSession() {
+
+    try {
+
+        const response =
+            await fetch(
                 API + "/api/admin/me",
                 {
                     method: "GET",
@@ -854,389 +1224,826 @@
             );
 
 
-            if (!response.ok) {
+        if (!response.ok) {
 
-                window.location.href = "/admin-login";
-
-                return false;
-            }
-
-
-            const data = await response.json();
-
-
-            if (!data.logged_in) {
-
-                window.location.href = "/admin-login";
-
-                return false;
-            }
-
-
-            document.getElementById("adminUsername").textContent =
-                "Logged in as: " + (data.username || "Admin");
-
-
-            return true;
-
-        } catch (error) {
-
-            console.error(
-                "Admin session check failed:",
-                error
-            );
-
-            window.location.href = "/admin-login";
+            window.location.href =
+                "/admin-login";
 
             return false;
+
         }
+
+
+        const data =
+            await response.json();
+
+
+        if (!data.logged_in) {
+
+            window.location.href =
+                "/admin-login";
+
+            return false;
+
+        }
+
+
+        document
+            .getElementById("adminUsername")
+            .textContent =
+            "Logged in as: " +
+            (data.username || "Admin");
+
+
+        return true;
+
+    } catch (error) {
+
+        console.error(
+            "Admin session error:",
+            error
+        );
+
+        window.location.href =
+            "/admin-login";
+
+        return false;
 
     }
 
+}
 
-    /* ============================================================
-       LOAD DASHBOARD STATS
-    ============================================================ */
 
-    async function loadStats() {
+// ============================================================
+// STATS
+// ============================================================
 
-        try {
+async function loadStats() {
 
-            const response = await fetch(
+    try {
+
+        const response =
+            await fetch(
                 API + "/api/admin/stats",
                 {
-                    method: "GET",
                     credentials: "include"
                 }
             );
 
 
-            if (response.status === 401) {
+        if (response.status === 401) {
 
-                window.location.href = "/admin-login";
+            window.location.href =
+                "/admin-login";
 
-                return;
-            }
-
-
-            if (!response.ok) {
-                throw new Error("Could not load statistics");
-            }
-
-
-            const data = await response.json();
-
-
-            document.getElementById("productCount").textContent =
-                data.products || 0;
-
-
-            document.getElementById("orderCount").textContent =
-                data.orders || 0;
-
-
-            document.getElementById("customerCount").textContent =
-                data.customers || 0;
-
-
-            document.getElementById("salesTotal").textContent =
-                formatPrice(data.sales || 0);
-
-        } catch (error) {
-
-            console.error(
-                "Stats error:",
-                error
-            );
+            return;
 
         }
 
+
+        const data =
+            await response.json();
+
+
+        if (!data.success) {
+            return;
+        }
+
+
+        const stats =
+            data.stats || {};
+
+
+        document
+            .getElementById("productCount")
+            .textContent =
+            stats.products || 0;
+
+
+        document
+            .getElementById("orderCount")
+            .textContent =
+            stats.orders || 0;
+
+
+        document
+            .getElementById("customerCount")
+            .textContent =
+            stats.customers || 0;
+
+
+        document
+            .getElementById("salesTotal")
+            .textContent =
+            formatPrice(
+                stats.sales || 0
+            );
+
+    } catch (error) {
+
+        console.error(
+            "Stats error:",
+            error
+        );
+
     }
 
+}
 
-    /* ============================================================
-       LOAD PRODUCTS
-    ============================================================ */
 
-    async function loadProducts() {
+// ============================================================
+// LOAD PRODUCTS
+// ============================================================
 
-        try {
+async function loadProducts() {
 
-            const response = await fetch(
+    try {
+
+        const response =
+            await fetch(
                 API + "/api/products",
                 {
-                    method: "GET",
                     credentials: "include"
                 }
             );
 
 
-            if (!response.ok) {
-                throw new Error("Could not load products");
-            }
+        if (!response.ok) {
 
-
-            const data = await response.json();
-
-            const products = data.products || [];
-
-
-            document.getElementById("productCount").textContent =
-                products.length;
-
-
-            const dashboardTable =
-                document.getElementById(
-                    "dashboardProductsTable"
-                );
-
-
-            const manageTable =
-                document.getElementById(
-                    "manageProductsTable"
-                );
-
-
-            dashboardTable.innerHTML = "";
-
-            manageTable.innerHTML = "";
-
-
-            if (products.length === 0) {
-
-                dashboardTable.innerHTML =
-                    '<tr><td colspan="5" class="empty">No products found.</td></tr>';
-
-                manageTable.innerHTML =
-                    '<tr><td colspan="6" class="empty">No products found.</td></tr>';
-
-                return;
-            }
-
-
-            products.forEach(product => {
-
-                dashboardTable.innerHTML += `
-
-                    <tr>
-
-                        <td>${product.id}</td>
-
-                        <td>
-                            ${escapeHTML(product.name)}
-                        </td>
-
-                        <td>
-                            ${escapeHTML(product.category)}
-                        </td>
-
-                        <td>
-                            ${escapeHTML(product.type || "-")}
-                        </td>
-
-                        <td>
-                            ${formatPrice(product.price)}
-                        </td>
-
-                    </tr>
-
-                `;
-
-
-                manageTable.innerHTML += `
-
-                    <tr>
-
-                        <td>${product.id}</td>
-
-                        <td>
-                            ${escapeHTML(product.name)}
-                        </td>
-
-                        <td>
-                            ${escapeHTML(product.category)}
-                        </td>
-
-                        <td>
-                            ${escapeHTML(product.type || "-")}
-                        </td>
-
-                        <td>
-                            ${formatPrice(product.price)}
-                        </td>
-
-                        <td>
-
-                            <button
-                                class="btn btn-primary btn-small"
-                                onclick="editProduct(${product.id})">
-                                Edit
-                            </button>
-
-                            <button
-                                class="btn btn-danger btn-small"
-                                onclick="deleteProduct(${product.id})">
-                                Delete
-                            </button>
-
-                        </td>
-
-                    </tr>
-
-                `;
-
-            });
-
-        } catch (error) {
-
-            console.error(
-                "Product loading error:",
-                error
+            throw new Error(
+                "Could not load products"
             );
 
         }
 
+
+        const data =
+            await response.json();
+
+
+        const products =
+            data.products || [];
+
+
+        document
+            .getElementById("productCount")
+            .textContent =
+            products.length;
+
+
+        const dashboardTable =
+            document.getElementById(
+                "dashboardProductsTable"
+            );
+
+
+        const manageTable =
+            document.getElementById(
+                "manageProductsTable"
+            );
+
+
+        dashboardTable.innerHTML = "";
+        manageTable.innerHTML = "";
+
+
+        if (products.length === 0) {
+
+            dashboardTable.innerHTML =
+                '<tr><td colspan="5" class="empty">No products found.</td></tr>';
+
+            manageTable.innerHTML =
+                '<tr><td colspan="7" class="empty">No products found.</td></tr>';
+
+            return;
+
+        }
+
+
+        products.forEach(product => {
+
+
+            // DASHBOARD TABLE
+
+            dashboardTable.innerHTML += `
+
+                <tr>
+
+                    <td>
+                        ${product.id}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(product.name)}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(product.category)}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(product.type || "-")}
+                    </td>
+
+                    <td>
+                        ${formatPrice(product.price)}
+                    </td>
+
+                </tr>
+
+            `;
+
+
+            // IMAGE
+
+            let imageHTML =
+                '<span>-</span>';
+
+
+            if (product.image) {
+
+                const imageURL =
+                    product.image.startsWith("http")
+                    ? product.image
+                    : product.image;
+
+
+                imageHTML = `
+
+                    <img
+                        class="product-thumb"
+                        src="${escapeHTML(imageURL)}"
+                        alt="Product"
+                        onerror="this.style.display='none'"
+                    >
+
+                `;
+
+            }
+
+
+            // MANAGE TABLE
+
+            manageTable.innerHTML += `
+
+                <tr>
+
+                    <td>
+                        ${product.id}
+                    </td>
+
+                    <td>
+                        ${imageHTML}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(product.name)}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(product.category)}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(product.type || "-")}
+                    </td>
+
+                    <td>
+                        ${formatPrice(product.price)}
+                    </td>
+
+                    <td>
+
+                        <button
+                            class="btn btn-primary btn-small"
+                            onclick="editProduct(${product.id})"
+                        >
+                            Edit
+                        </button>
+
+                        <button
+                            class="btn btn-danger btn-small"
+                            onclick="deleteProduct(${product.id})"
+                        >
+                            Delete
+                        </button>
+
+                    </td>
+
+                </tr>
+
+            `;
+
+        });
+
+    } catch (error) {
+
+        console.error(
+            "Product loading error:",
+            error
+        );
+
+    }
+
+}
+
+
+// ============================================================
+// IMAGE PREVIEW
+// ============================================================
+
+document
+    .getElementById("productImageFile")
+    .addEventListener(
+        "change",
+        function() {
+
+            const file =
+                this.files[0];
+
+
+            if (!file) {
+
+                return;
+
+            }
+
+
+            const allowedTypes = [
+                "image/jpeg",
+                "image/png",
+                "image/webp",
+                "image/gif"
+            ];
+
+
+            if (
+                !allowedTypes.includes(
+                    file.type
+                )
+            ) {
+
+                showMessage(
+                    "productMessage",
+                    "Please select JPG, PNG, WEBP or GIF.",
+                    "error"
+                );
+
+                this.value = "";
+
+                return;
+
+            }
+
+
+            if (
+                file.size >
+                8 * 1024 * 1024
+            ) {
+
+                showMessage(
+                    "productMessage",
+                    "Image must be smaller than 8 MB.",
+                    "error"
+                );
+
+                this.value = "";
+
+                return;
+
+            }
+
+
+            document
+                .getElementById(
+                    "selectedFileName"
+                )
+                .textContent =
+                "Selected: " + file.name;
+
+
+            const reader =
+                new FileReader();
+
+
+            reader.onload =
+                function(event) {
+
+                    document
+                        .getElementById(
+                            "previewImage"
+                        )
+                        .src =
+                        event.target.result;
+
+
+                    document
+                        .getElementById(
+                            "imagePreview"
+                        )
+                        .style.display =
+                        "block";
+
+                };
+
+
+            reader.readAsDataURL(file);
+
+        }
+    );
+
+
+// ============================================================
+// UPLOAD IMAGE
+// ============================================================
+
+async function uploadImage() {
+
+    const fileInput =
+        document.getElementById(
+            "productImageFile"
+        );
+
+
+    const file =
+        fileInput.files[0];
+
+
+    // If editing and no new file was selected,
+    // keep the old image.
+
+    if (!file) {
+
+        return document
+            .getElementById(
+                "productImage"
+            )
+            .value;
+
     }
 
 
-    /* ============================================================
-       GET SINGLE PRODUCT
-    ============================================================ */
+    const formData =
+        new FormData();
 
-    async function getProduct(productId) {
 
-        const response = await fetch(
-            API + "/api/products/" + productId,
+    formData.append(
+        "image",
+        file
+    );
+
+
+    const status =
+        document.getElementById(
+            "uploadStatus"
+        );
+
+
+    status.textContent =
+        "⏳ Uploading image...";
+
+
+    const response =
+        await fetch(
+            API + "/api/upload-image",
             {
-                method: "GET",
+                method: "POST",
+                credentials: "include",
+                body: formData
+            }
+        );
+
+
+    if (response.status === 401) {
+
+        window.location.href =
+            "/admin-login";
+
+        return null;
+
+    }
+
+
+    const data =
+        await response.json();
+
+
+    if (!response.ok || !data.success) {
+
+        throw new Error(
+            data.message ||
+            "Image upload failed"
+        );
+
+    }
+
+
+    status.textContent =
+        "✅ Image uploaded successfully";
+
+
+    return data.image;
+
+}
+
+
+// ============================================================
+// GET PRODUCT
+// ============================================================
+
+async function getProduct(productId) {
+
+    const response =
+        await fetch(
+            API +
+            "/api/products/" +
+            productId,
+            {
                 credentials: "include"
             }
         );
 
 
-        if (!response.ok) {
-            throw new Error("Product not found");
-        }
+    if (!response.ok) {
 
-
-        return await response.json();
+        throw new Error(
+            "Product not found"
+        );
 
     }
 
 
-    /* ============================================================
-       EDIT PRODUCT
-    ============================================================ */
-
-    async function editProduct(productId) {
-
-        try {
-
-            const product =
-                await getProduct(productId);
+    const data =
+        await response.json();
 
 
-            document.getElementById(
+    return data.product;
+
+}
+
+
+// ============================================================
+// EDIT PRODUCT
+// ============================================================
+
+async function editProduct(productId) {
+
+    try {
+
+        const product =
+            await getProduct(productId);
+
+
+        document
+            .getElementById(
                 "editingProductId"
-            ).value = product.id;
+            )
+            .value =
+            product.id;
 
 
-            document.getElementById(
+        document
+            .getElementById(
                 "productName"
-            ).value = product.name || "";
+            )
+            .value =
+            product.name || "";
 
 
-            document.getElementById(
+        document
+            .getElementById(
                 "productCategory"
-            ).value = product.category || "";
+            )
+            .value =
+            product.category || "";
 
 
-            document.getElementById(
+        document
+            .getElementById(
                 "productType"
-            ).value = product.type || "";
+            )
+            .value =
+            product.type || "";
 
 
-            document.getElementById(
+        document
+            .getElementById(
                 "productPrice"
-            ).value = product.price || "";
+            )
+            .value =
+            product.price || "";
 
 
-            document.getElementById(
+        document
+            .getElementById(
+                "productStock"
+            )
+            .value =
+            product.stock || 0;
+
+
+        document
+            .getElementById(
+                "productCelebrity"
+            )
+            .value =
+            product.celebrity || "";
+
+
+        document
+            .getElementById(
                 "productImage"
-            ).value = product.image || "";
+            )
+            .value =
+            product.image || "";
 
 
-            document.getElementById(
+        // Clear new file selection
+
+        document
+            .getElementById(
+                "productImageFile"
+            )
+            .value = "";
+
+
+        document
+            .getElementById(
+                "selectedFileName"
+            )
+            .textContent =
+            product.image
+            ? "Current image is being used. Select a new image to replace it."
+            : "";
+
+
+        if (product.image) {
+
+            document
+                .getElementById(
+                    "previewImage"
+                )
+                .src =
+                product.image;
+
+
+            document
+                .getElementById(
+                    "imagePreview"
+                )
+                .style.display =
+                "block";
+
+        } else {
+
+            document
+                .getElementById(
+                    "imagePreview"
+                )
+                .style.display =
+                "none";
+
+        }
+
+
+        document
+            .getElementById(
                 "productSubmitButton"
-            ).textContent = "💾 Update Product";
+            )
+            .textContent =
+            "💾 Update Product";
 
 
-            document.getElementById(
+        document
+            .getElementById(
                 "cancelEditButton"
-            ).classList.remove("hidden");
-
-
-            showSection(
-                "products",
-                document.querySelectorAll(".nav-btn")[1]
+            )
+            .classList.remove(
+                "hidden"
             );
 
 
-            window.scrollTo({
-                top: 0,
-                behavior: "smooth"
-            });
+        showSection(
+            "products",
+            document.querySelectorAll(
+                ".nav-btn"
+            )[1]
+        );
 
-        } catch (error) {
 
-            alert("Could not load product.");
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
 
-            console.error(error);
 
-        }
+    } catch (error) {
+
+        alert(
+            "Could not load product."
+        );
+
+        console.error(error);
 
     }
 
+}
 
-    /* ============================================================
-       CANCEL EDIT
-    ============================================================ */
 
-    function cancelEdit() {
+// ============================================================
+// CANCEL EDIT
+// ============================================================
 
-        document.getElementById(
+function cancelEdit() {
+
+    document
+        .getElementById(
             "editingProductId"
-        ).value = "";
+        )
+        .value = "";
 
 
-        document.getElementById(
+    document
+        .getElementById(
             "productForm"
-        ).reset();
+        )
+        .reset();
 
 
-        document.getElementById(
+    document
+        .getElementById(
+            "productStock"
+        )
+        .value = 10;
+
+
+    document
+        .getElementById(
             "productSubmitButton"
-        ).textContent = "➕ Add Product";
+        )
+        .textContent =
+        "➕ Add Product";
 
 
-        document.getElementById(
+    document
+        .getElementById(
             "cancelEditButton"
-        ).classList.add("hidden");
+        )
+        .classList.add(
+            "hidden"
+        );
 
-    }
+
+    document
+        .getElementById(
+            "imagePreview"
+        )
+        .style.display =
+        "none";
 
 
-    /* ============================================================
-       ADD / UPDATE PRODUCT
-    ============================================================ */
+    document
+        .getElementById(
+            "selectedFileName"
+        )
+        .textContent = "";
 
-    document.getElementById(
+
+    document
+        .getElementById(
+            "uploadStatus"
+        )
+        .textContent = "";
+
+
+    document
+        .getElementById(
+            "productImage"
+        )
+        .value = "";
+
+}
+
+
+// ============================================================
+// ADD / UPDATE PRODUCT
+// ============================================================
+
+document
+    .getElementById(
         "productForm"
-    ).addEventListener(
+    )
+    .addEventListener(
         "submit",
         async function(event) {
 
             event.preventDefault();
+
+
+            const submitButton =
+                document.getElementById(
+                    "productSubmitButton"
+                );
 
 
             const editingId =
@@ -1245,102 +2052,151 @@
                 ).value;
 
 
-            const product = {
-
-                name:
-                    document.getElementById(
-                        "productName"
-                    ).value.trim(),
-
-                category:
-                    document.getElementById(
-                        "productCategory"
-                    ).value.trim(),
-
-                type:
-                    document.getElementById(
-                        "productType"
-                    ).value.trim(),
-
-                price:
-                    Number(
-                        document.getElementById(
-                            "productPrice"
-                        ).value
-                    ),
-
-                image:
-                    document.getElementById(
-                        "productImage"
-                    ).value.trim()
-
-            };
-
-
-            if (!product.name || !product.category) {
-
-                showMessage(
-                    "productMessage",
-                    "Product name and category are required.",
-                    "error"
-                );
-
-                return;
-            }
-
-
-            if (isNaN(product.price) || product.price < 0) {
-
-                showMessage(
-                    "productMessage",
-                    "Please enter a valid price.",
-                    "error"
-                );
-
-                return;
-            }
-
-
             try {
+
+                submitButton.disabled = true;
+
+
+                submitButton.textContent =
+                    "⏳ Saving...";
+
+
+                // Upload image if selected
+
+                const uploadedImage =
+                    await uploadImage();
+
+
+                if (
+                    uploadedImage === null
+                ) {
+
+                    return;
+
+                }
+
+
+                const product = {
+
+                    name:
+                        document.getElementById(
+                            "productName"
+                        ).value.trim(),
+
+                    category:
+                        document.getElementById(
+                            "productCategory"
+                        ).value.trim(),
+
+                    type:
+                        document.getElementById(
+                            "productType"
+                        ).value.trim(),
+
+                    price:
+                        Number(
+                            document.getElementById(
+                                "productPrice"
+                            ).value
+                        ),
+
+                    image:
+                        uploadedImage,
+
+                    celebrity:
+                        document.getElementById(
+                            "productCelebrity"
+                        ).value.trim(),
+
+                    stock:
+                        Number(
+                            document.getElementById(
+                                "productStock"
+                            ).value
+                        )
+
+                };
+
+
+                if (
+                    !product.name ||
+                    !product.category
+                ) {
+
+                    throw new Error(
+                        "Product name and category are required."
+                    );
+
+                }
+
+
+                if (
+                    isNaN(product.price) ||
+                    product.price < 0
+                ) {
+
+                    throw new Error(
+                        "Please enter a valid price."
+                    );
+
+                }
+
+
+                if (
+                    isNaN(product.stock) ||
+                    product.stock < 0
+                ) {
+
+                    throw new Error(
+                        "Please enter a valid stock quantity."
+                    );
+
+                }
+
 
                 let response;
 
 
                 if (editingId) {
 
-                    response = await fetch(
-                        API + "/api/products/" + editingId,
-                        {
-                            method: "PUT",
-
-                            credentials: "include",
-
-                            headers: {
-                                "Content-Type":
-                                    "application/json"
-                            },
-
-                            body: JSON.stringify(product)
-                        }
-                    );
+                    response =
+                        await fetch(
+                            API +
+                            "/api/products/" +
+                            editingId,
+                            {
+                                method: "PUT",
+                                credentials: "include",
+                                headers: {
+                                    "Content-Type":
+                                        "application/json"
+                                },
+                                body:
+                                    JSON.stringify(
+                                        product
+                                    )
+                            }
+                        );
 
                 } else {
 
-                    response = await fetch(
-                        API + "/api/products",
-                        {
-                            method: "POST",
-
-                            credentials: "include",
-
-                            headers: {
-                                "Content-Type":
-                                    "application/json"
-                            },
-
-                            body: JSON.stringify(product)
-                        }
-                    );
+                    response =
+                        await fetch(
+                            API +
+                            "/api/products",
+                            {
+                                method: "POST",
+                                credentials: "include",
+                                headers: {
+                                    "Content-Type":
+                                        "application/json"
+                                },
+                                body:
+                                    JSON.stringify(
+                                        product
+                                    )
+                            }
+                        );
 
                 }
 
@@ -1351,6 +2207,7 @@
                         "/admin-login";
 
                     return;
+
                 }
 
 
@@ -1361,7 +2218,7 @@
                 if (!response.ok) {
 
                     throw new Error(
-                        data.error ||
+                        data.message ||
                         "Something went wrong"
                     );
 
@@ -1378,13 +2235,16 @@
 
                 cancelEdit();
 
+
                 await loadProducts();
 
                 await loadStats();
 
+
             } catch (error) {
 
                 console.error(error);
+
 
                 showMessage(
                     "productMessage",
@@ -1393,383 +2253,439 @@
                     "error"
                 );
 
+            } finally {
+
+                submitButton.disabled = false;
+
+
+                if (
+                    document
+                        .getElementById(
+                            "editingProductId"
+                        )
+                        .value
+                ) {
+
+                    submitButton.textContent =
+                        "💾 Update Product";
+
+                } else {
+
+                    submitButton.textContent =
+                        "➕ Add Product";
+
+                }
+
             }
 
         }
     );
 
 
-    /* ============================================================
-       DELETE PRODUCT
-    ============================================================ */
+// ============================================================
+// DELETE PRODUCT
+// ============================================================
 
-    async function deleteProduct(productId) {
+async function deleteProduct(productId) {
 
-        const confirmed =
-            confirm(
-                "Are you sure you want to delete this product?"
-            );
-
-
-        if (!confirmed) {
-            return;
-        }
+    const confirmed =
+        confirm(
+            "Are you sure you want to delete this product?"
+        );
 
 
-        try {
-
-            const response =
-                await fetch(
-                    API + "/api/products/" + productId,
-                    {
-                        method: "DELETE",
-                        credentials: "include"
-                    }
-                );
-
-
-            if (response.status === 401) {
-
-                window.location.href =
-                    "/admin-login";
-
-                return;
-            }
-
-
-            const data =
-                await response.json();
-
-
-            if (!response.ok) {
-
-                throw new Error(
-                    data.error ||
-                    "Could not delete product"
-                );
-
-            }
-
-
-            showMessage(
-                "productMessage",
-                data.message ||
-                "Product deleted successfully.",
-                "success"
-            );
-
-
-            await loadProducts();
-
-            await loadStats();
-
-        } catch (error) {
-
-            console.error(error);
-
-            showMessage(
-                "productMessage",
-                error.message ||
-                "Could not delete product.",
-                "error"
-            );
-
-        }
-
+    if (!confirmed) {
+        return;
     }
 
 
-    /* ============================================================
-       LOAD ORDERS
-    ============================================================ */
+    try {
 
-    async function loadOrders() {
-
-        const table =
-            document.getElementById(
-                "ordersTable"
-            );
-
-
-        table.innerHTML =
-            '<tr><td colspan="7" class="loading">Loading orders...</td></tr>';
-
-
-        try {
-
-            const response =
-                await fetch(
-                    API + "/api/admin/orders",
-                    {
-                        method: "GET",
-                        credentials: "include"
-                    }
-                );
-
-
-            if (response.status === 401) {
-
-                window.location.href =
-                    "/admin-login";
-
-                return;
-            }
-
-
-            if (!response.ok) {
-                throw new Error("Could not load orders");
-            }
-
-
-            const data =
-                await response.json();
-
-
-            const orders =
-                data.orders || [];
-
-
-            table.innerHTML = "";
-
-
-            if (orders.length === 0) {
-
-                table.innerHTML =
-                    '<tr><td colspan="7" class="empty">No orders found.</td></tr>';
-
-                return;
-            }
-
-
-            orders.forEach(order => {
-
-                table.innerHTML += `
-
-                    <tr>
-
-                        <td>
-                            #${order.id}
-                        </td>
-
-                        <td>
-                            ${escapeHTML(order.name || "Guest")}
-                        </td>
-
-                        <td>
-                            ${escapeHTML(order.email || "-")}
-                        </td>
-
-                        <td>
-                            ${formatPrice(order.total)}
-                        </td>
-
-                        <td>
-                            <span class="status">
-                                ${escapeHTML(order.status || "Pending")}
-                            </span>
-                        </td>
-
-                        <td>
-                            ${formatDate(order.created_at)}
-                        </td>
-
-                        <td>
-                            <details>
-                                <summary>View</summary>
-                                <div style="margin-top:8px;max-width:350px;white-space:pre-wrap;word-break:break-word;">
-                                    ${escapeHTML(order.order_data)}
-                                </div>
-                            </details>
-                        </td>
-
-                    </tr>
-
-                `;
-
-            });
-
-        } catch (error) {
-
-            console.error(
-                "Orders error:",
-                error
-            );
-
-
-            table.innerHTML =
-                '<tr><td colspan="7" class="empty">Could not load orders.</td></tr>';
-
-        }
-
-    }
-
-
-    /* ============================================================
-       LOAD CUSTOMERS
-    ============================================================ */
-
-    async function loadCustomers() {
-
-        const table =
-            document.getElementById(
-                "customersTable"
-            );
-
-
-        table.innerHTML =
-            '<tr><td colspan="4" class="loading">Loading customers...</td></tr>';
-
-
-        try {
-
-            const response =
-                await fetch(
-                    API + "/api/admin/customers",
-                    {
-                        method: "GET",
-                        credentials: "include"
-                    }
-                );
-
-
-            if (response.status === 401) {
-
-                window.location.href =
-                    "/admin-login";
-
-                return;
-            }
-
-
-            if (!response.ok) {
-                throw new Error(
-                    "Could not load customers"
-                );
-            }
-
-
-            const data =
-                await response.json();
-
-
-            const customers =
-                data.customers || [];
-
-
-            table.innerHTML = "";
-
-
-            if (customers.length === 0) {
-
-                table.innerHTML =
-                    '<tr><td colspan="4" class="empty">No customers registered yet.</td></tr>';
-
-                return;
-            }
-
-
-            customers.forEach(customer => {
-
-                table.innerHTML += `
-
-                    <tr>
-
-                        <td>
-                            ${customer.id}
-                        </td>
-
-                        <td>
-                            ${escapeHTML(customer.name)}
-                        </td>
-
-                        <td>
-                            ${escapeHTML(customer.email)}
-                        </td>
-
-                        <td>
-                            ${formatDate(customer.created_at)}
-                        </td>
-
-                    </tr>
-
-                `;
-
-            });
-
-        } catch (error) {
-
-            console.error(
-                "Customers error:",
-                error
-            );
-
-
-            table.innerHTML =
-                '<tr><td colspan="4" class="empty">Could not load customers.</td></tr>';
-
-        }
-
-    }
-
-
-    /* ============================================================
-       ADMIN LOGOUT
-    ============================================================ */
-
-    async function logoutAdmin() {
-
-        try {
-
+        const response =
             await fetch(
-                API + "/api/admin/logout",
+                API +
+                "/api/products/" +
+                productId,
                 {
-                    method: "POST",
+                    method: "DELETE",
                     credentials: "include"
                 }
             );
 
-        } catch (error) {
 
-            console.error(
-                "Logout error:",
-                error
+        if (response.status === 401) {
+
+            window.location.href =
+                "/admin-login";
+
+            return;
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.message ||
+                "Could not delete product"
             );
 
         }
 
 
-        window.location.href =
-            "/admin-login";
+        showMessage(
+            "productMessage",
+            data.message ||
+            "Product deleted successfully.",
+            "success"
+        );
 
-    }
-
-
-    /* ============================================================
-       INITIAL LOAD
-    ============================================================ */
-
-    async function initializeDashboard() {
-
-        const loggedIn =
-            await checkAdminSession();
-
-
-        if (!loggedIn) {
-            return;
-        }
-
-
-        await loadStats();
 
         await loadProducts();
 
+        await loadStats();
+
+
+    } catch (error) {
+
+        console.error(error);
+
+
+        showMessage(
+            "productMessage",
+            error.message ||
+            "Could not delete product.",
+            "error"
+        );
+
+    }
+
+}
+
+
+// ============================================================
+// LOAD ORDERS
+// ============================================================
+
+async function loadOrders() {
+
+    const table =
+        document.getElementById(
+            "ordersTable"
+        );
+
+
+    table.innerHTML =
+        '<tr><td colspan="7" class="loading">Loading orders...</td></tr>';
+
+
+    try {
+
+        const response =
+            await fetch(
+                API +
+                "/api/admin/orders",
+                {
+                    credentials: "include"
+                }
+            );
+
+
+        if (response.status === 401) {
+
+            window.location.href =
+                "/admin-login";
+
+            return;
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        const orders =
+            data.orders || [];
+
+
+        table.innerHTML = "";
+
+
+        if (orders.length === 0) {
+
+            table.innerHTML =
+                '<tr><td colspan="7" class="empty">No orders found.</td></tr>';
+
+            return;
+
+        }
+
+
+        orders.forEach(order => {
+
+            table.innerHTML += `
+
+                <tr>
+
+                    <td>
+                        #${order.id}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(
+                            order.customer_name ||
+                            "Guest"
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(
+                            order.customer_email ||
+                            "-"
+                        )}
+                    </td>
+
+                    <td>
+                        ${formatPrice(order.total)}
+                    </td>
+
+                    <td>
+                        <span class="status">
+                            ${escapeHTML(
+                                order.status ||
+                                "Pending"
+                            )}
+                        </span>
+                    </td>
+
+                    <td>
+                        ${formatDate(
+                            order.created_at
+                        )}
+                    </td>
+
+                    <td>
+
+                        <details>
+
+                            <summary>
+                                View
+                            </summary>
+
+                            <div
+                                style="
+                                    margin-top:8px;
+                                    max-width:350px;
+                                    white-space:pre-wrap;
+                                    word-break:break-word;
+                                "
+                            >
+                                ${escapeHTML(
+                                    order.order_data
+                                )}
+                            </div>
+
+                        </details>
+
+                    </td>
+
+                </tr>
+
+            `;
+
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "Orders error:",
+            error
+        );
+
+
+        table.innerHTML =
+            '<tr><td colspan="7" class="empty">Could not load orders.</td></tr>';
+
+    }
+
+}
+
+
+// ============================================================
+// LOAD CUSTOMERS
+// ============================================================
+
+async function loadCustomers() {
+
+    const table =
+        document.getElementById(
+            "customersTable"
+        );
+
+
+    table.innerHTML =
+        '<tr><td colspan="4" class="loading">Loading customers...</td></tr>';
+
+
+    try {
+
+        const response =
+            await fetch(
+                API +
+                "/api/admin/customers",
+                {
+                    credentials: "include"
+                }
+            );
+
+
+        if (response.status === 401) {
+
+            window.location.href =
+                "/admin-login";
+
+            return;
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        const customers =
+            data.customers || [];
+
+
+        table.innerHTML = "";
+
+
+        if (customers.length === 0) {
+
+            table.innerHTML =
+                '<tr><td colspan="4" class="empty">No customers registered yet.</td></tr>';
+
+            return;
+
+        }
+
+
+        customers.forEach(customer => {
+
+            table.innerHTML += `
+
+                <tr>
+
+                    <td>
+                        ${customer.id}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(
+                            customer.name
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(
+                            customer.email
+                        )}
+                    </td>
+
+                    <td>
+                        ${formatDate(
+                            customer.created_at
+                        )}
+                    </td>
+
+                </tr>
+
+            `;
+
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "Customers error:",
+            error
+        );
+
+
+        table.innerHTML =
+            '<tr><td colspan="4" class="empty">Could not load customers.</td></tr>';
+
+    }
+
+}
+
+
+// ============================================================
+// LOGOUT
+// ============================================================
+
+async function logoutAdmin() {
+
+    try {
+
+        await fetch(
+            API +
+            "/api/admin/logout",
+            {
+                method: "POST",
+                credentials: "include"
+            }
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Logout error:",
+            error
+        );
+
     }
 
 
-    initializeDashboard();
+    window.location.href =
+        "/admin-login";
+
+}
+
+
+// ============================================================
+// INITIALIZE
+// ============================================================
+
+async function initializeDashboard() {
+
+    const loggedIn =
+        await checkAdminSession();
+
+
+    if (!loggedIn) {
+        return;
+    }
+
+
+    await loadStats();
+
+    await loadProducts();
+
+}
+
+
+initializeDashboard();
 
 </script>
 
 </body>
-    </html>
-        
+
+</html>
