@@ -82,7 +82,6 @@ DATABASE = os.environ.get(
 
 
 def get_db():
-
     db = sqlite3.connect(
         DATABASE,
         timeout=30
@@ -98,7 +97,6 @@ def column_exists(
     table,
     column
 ):
-
     columns = db.execute(
         f"PRAGMA table_info({table})"
     ).fetchall()
@@ -594,8 +592,7 @@ def product_to_dict(row):
         "celebrity":
             (
                 row["celebrity"]
-                if "celebrity"
-                in row.keys()
+                if "celebrity" in row.keys()
                 else ""
             ),
 
@@ -604,13 +601,13 @@ def product_to_dict(row):
                 int(
                     row["stock"]
                 )
-                if "stock"
-                in row.keys()
+                if "stock" in row.keys()
                 else 0
             ),
 
         "created_at":
             row["created_at"]
+
     }
 
 
@@ -709,15 +706,9 @@ def upload_image():
             "message": "No image file selected"
         }), 400
 
-    file = request.files[
-        "image"
-    ]
+    file = request.files["image"]
 
-    if (
-        not file
-        or
-        file.filename == ""
-    ):
+    if not file or file.filename == "":
 
         return jsonify({
             "success": False,
@@ -739,6 +730,13 @@ def upload_image():
         file.filename
     )
 
+    if "." not in original_name:
+
+        return jsonify({
+            "success": False,
+            "message": "Invalid image filename"
+        }), 400
+
     extension = original_name.rsplit(
         ".",
         1
@@ -755,12 +753,25 @@ def upload_image():
         unique_name
     )
 
-    file.save(
-        save_path
-    )
+    try:
 
+        file.save(
+            save_path
+        )
+
+    except Exception as error:
+
+        return jsonify({
+            "success": False,
+            "message": "Could not save image",
+            "error": str(error)
+        }), 500
+
+    # IMPORTANT:
+    # Return the complete website URL.
     image_url = (
-        "/uploads/"
+        request.host_url.rstrip("/")
+        + "/uploads/"
         + unique_name
     )
 
@@ -772,7 +783,10 @@ def upload_image():
             "Image uploaded successfully",
 
         "image":
-            image_url
+            image_url,
+
+        "filename":
+            unique_name
 
     })
 
@@ -924,7 +938,6 @@ def create_product():
             row
         )
 
-        # Verify the product really exists
         verify_count = db.execute(
             "SELECT COUNT(*) FROM products"
         ).fetchone()[0]
@@ -1203,9 +1216,7 @@ def delete_product(product_id):
                 "Product not found"
         }), 404
 
-    image = existing[
-        "image"
-    ]
+    image = existing["image"]
 
     db.execute("""
         DELETE FROM products
@@ -1222,16 +1233,13 @@ def delete_product(product_id):
     if (
         image
         and
-        image.startswith(
-            "/uploads/"
-        )
+        "/uploads/" in image
     ):
 
-        filename = image.replace(
+        filename = image.split(
             "/uploads/",
-            "",
             1
-        )
+        )[1]
 
         filename = os.path.basename(
             filename
@@ -1320,6 +1328,7 @@ def admin_stats():
                 float(
                     sales or 0
                 )
+
         }
 
     })
@@ -1575,7 +1584,7 @@ def register():
 
 
 # ============================================================
-# CREATE ORDER
+# CREATE ORDER / CHECKOUT API
 # ============================================================
 
 @app.route(
@@ -1591,14 +1600,49 @@ def create_order():
         or {}
     )
 
+    # Accept both formats:
+    # { "items": [...] }
+    # OR
+    # { "order_data": [...] }
+
     order_data = data.get(
-        "order_data",
-        data.get(
+        "order_data"
+    )
+
+    if order_data is None:
+
+        order_data = data.get(
             "items",
             []
         )
-    )
 
+    # Cart cannot be empty
+    if not isinstance(
+        order_data,
+        list
+    ):
+
+        return jsonify({
+
+            "success": False,
+
+            "message":
+                "Invalid order items"
+
+        }), 400
+
+    if len(order_data) == 0:
+
+        return jsonify({
+
+            "success": False,
+
+            "message":
+                "Your cart is empty"
+
+        }), 400
+
+    # Calculate total
     try:
 
         total = float(
@@ -1613,50 +1657,116 @@ def create_order():
         ValueError
     ):
 
-        total = 0
+        return jsonify({
+
+            "success": False,
+
+            "message":
+                "Invalid order total"
+
+        }), 400
+
+    if total < 0:
+
+        return jsonify({
+
+            "success": False,
+
+            "message":
+                "Order total cannot be negative"
+
+        }), 400
 
     user_id = data.get(
         "user_id"
     )
 
+    # Convert user_id safely
+    if user_id in (
+        "",
+        None
+    ):
+
+        user_id = None
+
+    else:
+
+        try:
+
+            user_id = int(
+                user_id
+            )
+
+        except (
+            TypeError,
+            ValueError
+        ):
+
+            user_id = None
+
     db = get_db()
 
-    cursor = db.execute("""
-        INSERT INTO orders
-        (
+    try:
+
+        cursor = db.execute("""
+            INSERT INTO orders
+            (
+                user_id,
+                order_data,
+                total,
+                status
+            )
+
+            VALUES (?, ?, ?, ?)
+        """, (
             user_id,
-            order_data,
+            json.dumps(
+                order_data
+            ),
             total,
-            status
-        )
+            "Pending"
+        ))
 
-        VALUES (?, ?, ?, ?)
-    """, (
-        user_id,
-        json.dumps(
-            order_data
-        ),
-        total,
-        "Pending"
-    ))
+        db.commit()
 
-    db.commit()
+        order_id = cursor.lastrowid
 
-    order_id = cursor.lastrowid
+        db.close()
 
-    db.close()
+        return jsonify({
 
-    return jsonify({
+            "success": True,
 
-        "success": True,
+            "message":
+                "Order created successfully",
 
-        "message":
-            "Order created successfully",
+            "order_id":
+                order_id,
 
-        "order_id":
-            order_id
+            "total":
+                total,
 
-    }), 201
+            "status":
+                "Pending"
+
+        }), 201
+
+    except Exception as error:
+
+        db.rollback()
+        db.close()
+
+        return jsonify({
+
+            "success": False,
+
+            "message":
+                "Could not create order",
+
+            "error":
+                str(error)
+
+        }), 500
 
 
 # ============================================================
@@ -1674,6 +1784,10 @@ def health():
         "SELECT COUNT(*) FROM products"
     ).fetchone()[0]
 
+    order_count = db.execute(
+        "SELECT COUNT(*) FROM orders"
+    ).fetchone()[0]
+
     db.close()
 
     return jsonify({
@@ -1689,7 +1803,10 @@ def health():
             ),
 
         "product_count":
-            product_count
+            product_count,
+
+        "order_count":
+            order_count
 
     })
 
