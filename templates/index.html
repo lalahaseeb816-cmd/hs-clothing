@@ -1,154 +1,135 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>H&S Clothing - Celebrity Inspired Fashion</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background-color: #f8f9fa; color: #333; }
-    header { background: #111; color: #fff; text-align: center; padding: 2rem; }
-    .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
-    h2 { margin-bottom: 1.5rem; text-align: center; border-bottom: 2rem; position: relative; }
-    
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 3rem;
-    }
-    
-    .card {
-      background: #fff;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-      transition: transform 0.2s ease;
-    }
-    .card:hover { transform: translateY(-4px); }
-    
-    .card img {
-      width: 100%;
-      height: 380px;
-      object-fit: cover;
-      object-position: top;
-    }
-    
-    .card-body { padding: 1rem; text-align: center; }
-    .card-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; }
-    .price { color: #e63946; font-weight: bold; font-size: 1.1rem; }
-    button {
-      margin-top: 0.75rem;
-      padding: 0.5rem 1.2rem;
-      background-color: #111;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    button:hover { background-color: #333; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H&S Clothing</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        body {
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        header {
+            background-color: #222;
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        nav {
+            display: flex;
+            justify-content: center;
+            background-color: #333;
+        }
+        nav a {
+            color: white;
+            padding: 14px 20px;
+            text-decoration: none;
+            text-align: center;
+        }
+        nav a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+        .container {
+            padding: 20px;
+            max-width: 1200px;
+            margin: auto;
+        }
+        .section-title {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .products {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+        .card {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            width: 280px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .card img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        .card h3 {
+            margin: 10px 0;
+        }
+        .card p {
+            color: #28a745;
+            font-weight: bold;
+        }
+        footer {
+            background-color: #222;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            margin-top: 30px;
+        }
+    </style>
 </head>
 <body>
 
-  <header>
-    <h1>H&S CLOTHING</h1>
-    <p>Celebrity-Inspired Trends & Style</p>
-  </header>
+    <header>
+        <h1>H&S Clothing</h1>
+        <p>Celebrity Inspired Fashion</p>
+    </header>
 
-  <div class="container">
-    
-    <!-- Women's Collection -->
-    <h2>Women's Collection</h2>
-    <div class="grid">
-      <div class="card">
-        <img src="8612.jpg" alt="Red Cardigan Look">
-        <div class="card-body">
-          <div class="card-title">Cozy Knit Cardigan</div>
-          <div class="price">$59.99</div>
-          <button>View Outfit</button>
-        </div>
-      </div>
+    <nav>
+        <a href="#men">Men's Collection</a>
+        <a href="#women">Women's Collection</a>
+        <a href="#about">About Us</a>
+    </nav>
 
-      <div class="card">
-        <img src="1932.jpg" alt="Floral Summer Dress">
-        <div class="card-body">
-          <div class="card-title">Floral Strapless Sundress</div>
-          <div class="price">$49.99</div>
-          <button>View Outfit</button>
+    <div class="container">
+        
+        <h2 id="women" class="section-title">Women's Collection</h2>
+        <div class="products">
+            <div class="card">
+                <img src="https://via.placeholder.com/280x250" alt="Women Outfit 1">
+                <h3>Celebrity Style Outfit 1</h3>
+                <p>$49.99</p>
+            </div>
+            <div class="card">
+                <img src="https://via.placeholder.com/280x250" alt="Women Outfit 2">
+                <h3>Celebrity Style Outfit 2</h3>
+                <p>$59.99</p>
+            </div>
         </div>
-      </div>
 
-      <div class="card">
-        <img src="8613.jpg" alt="White Outerwear Style">
-        <div class="card-body">
-          <div class="card-title">Street Style Layered Set</div>
-          <div class="price">$79.99</div>
-          <button>View Outfit</button>
+        <h2 id="men" class="section-title">Men's Collection</h2>
+        <div class="products">
+            <div class="card">
+                <img src="https://via.placeholder.com/280x250" alt="Men Outfit 1">
+                <h3>Celebrity Style Outfit 1</h3>
+                <p>$69.99</p>
+            </div>
+            <div class="card">
+                <img src="https://via.placeholder.com/280x250" alt="Men Outfit 2">
+                <h3>Celebrity Style Outfit 2</h3>
+                <p>$79.99</p>
+            </div>
         </div>
-      </div>
+
     </div>
 
-    <!-- Men's Collection -->
-    <h2>Men's Collection</h2>
-    <div class="grid">
-      <div class="card">
-        <img src="8619.jpg" alt="Black Shirt Look">
-        <div class="card-body">
-          <div class="card-title">Classic Black Casual Shirt</div>
-          <div class="price">$45.99</div>
-          <button>View Outfit</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <img src="8618.jpg" alt="Tuxedo Look">
-        <div class="card-body">
-          <div class="card-title">Tailored Evening Tuxedo</div>
-          <div class="price">$199.99</div>
-          <button>View Outfit</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <img src="8615.jpg" alt="Grey Formal Suit">
-        <div class="card-body">
-          <div class="card-title">Executive Grey Suit</div>
-          <div class="price">$179.99</div>
-          <button>View Outfit</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <img src="8616.jpg" alt="Pinstripe Suit Look">
-        <div class="card-body">
-          <div class="card-title">Pinstripe Business Suit</div>
-          <div class="price">$189.99</div>
-          <button>View Outfit</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <img src="8617.jpg" alt="Striped Casual Shirt">
-        <div class="card-body">
-          <div class="card-title">Relaxed Fit Striped Shirt</div>
-          <div class="price">$39.99</div>
-          <button>View Outfit</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <img src="2333.webp" alt="Gothic Leather Outerwear">
-        <div class="card-body">
-          <div class="card-title">Dark Edition Heavy Jacket</div>
-          <div class="price">$129.99</div>
-          <button>View Outfit</button>
-        </div>
-      </div>
-    </div>
-
-  </div>
+    <footer>
+        <p>&copy; H&S Clothing. All rights reserved.</p>
+    </footer>
 
 </body>
 </html>
-
