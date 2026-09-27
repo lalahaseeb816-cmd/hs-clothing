@@ -1,135 +1,2193 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>H&S Clothing</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-        }
-        body {
-            background-color: #f4f4f4;
-            color: #333;
-        }
-        header {
-            background-color: #222;
-            color: white;
-            padding: 1.5rem;
-            text-align: center;
-        }
-        nav {
-            display: flex;
-            justify-content: center;
-            background-color: #333;
-        }
-        nav a {
-            color: white;
-            padding: 14px 20px;
-            text-decoration: none;
-            text-align: center;
-        }
-        nav a:hover {
-            background-color: #ddd;
-            color: black;
-        }
-        .container {
-            padding: 20px;
-            max-width: 1200px;
-            margin: auto;
-        }
-        .section-title {
-            text-align: center;
-            margin: 20px 0;
-        }
-        .products {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: center;
-        }
-        .card {
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            width: 280px;
-            padding: 15px;
-            text-align: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .card img {
-            width: 100%;
-            height: 250px;
-            object-fit: cover;
-            border-radius: 4px;
-        }
-        .card h3 {
-            margin: 10px 0;
-        }
-        .card p {
-            color: #28a745;
-            font-weight: bold;
-        }
-        footer {
-            background-color: #222;
-            color: white;
-            text-align: center;
-            padding: 15px;
-            margin-top: 30px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>H&S Clothing | Premium Fashion</title>
+
+<meta name="description" content="H&S Clothing — Premium celebrity-inspired fashion for men and women.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    font-family:'Montserrat',sans-serif;
+    background:#fff;
+    color:#111;
+}
+
+/* ================= HEADER ================= */
+
+header{
+    position:sticky;
+    top:0;
+    z-index:1000;
+    background:#000;
+    color:#fff;
+    border-bottom:1px solid #222;
+}
+
+.top-bar{
+    text-align:center;
+    background:#111;
+    padding:8px;
+    font-size:11px;
+    letter-spacing:2px;
+    color:#ccc;
+}
+
+.navbar{
+    max-width:1400px;
+    margin:auto;
+    min-height:72px;
+    padding:0 25px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+}
+
+.logo{
+    font-family:'Playfair Display',serif;
+    font-size:30px;
+    font-weight:700;
+    letter-spacing:3px;
+    white-space:nowrap;
+}
+
+.logo span{
+    color:#aaa;
+}
+
+.nav-links{
+    display:flex;
+    align-items:center;
+    gap:28px;
+}
+
+.nav-links a{
+    color:white;
+    text-decoration:none;
+    font-size:13px;
+    font-weight:600;
+    letter-spacing:1px;
+    transition:.3s;
+}
+
+.nav-links a:hover{
+    color:#aaa;
+}
+
+.nav-actions{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.icon-btn{
+    border:0;
+    background:#fff;
+    color:#000;
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    cursor:pointer;
+    font-size:17px;
+    position:relative;
+}
+
+.cart-count{
+    position:absolute;
+    right:-3px;
+    top:-3px;
+    width:19px;
+    height:19px;
+    border-radius:50%;
+    background:#d00;
+    color:#fff;
+    font-size:10px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+/* ================= HERO ================= */
+
+.hero{
+    min-height:650px;
+    background:
+        linear-gradient(rgba(0,0,0,.55),rgba(0,0,0,.65)),
+        url("https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&w=2000&q=85")
+        center/cover;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    color:#fff;
+    padding:60px 20px;
+}
+
+.hero-content{
+    max-width:850px;
+}
+
+.hero small{
+    letter-spacing:5px;
+    font-size:12px;
+    font-weight:600;
+}
+
+.hero h1{
+    font-family:'Playfair Display',serif;
+    font-size:clamp(48px,8vw,100px);
+    line-height:1;
+    margin:25px 0;
+}
+
+.hero p{
+    max-width:600px;
+    margin:auto;
+    color:#ddd;
+    line-height:1.8;
+}
+
+.hero-buttons{
+    margin-top:35px;
+    display:flex;
+    justify-content:center;
+    gap:15px;
+    flex-wrap:wrap;
+}
+
+.btn{
+    padding:15px 30px;
+    border:1px solid #fff;
+    background:#fff;
+    color:#000;
+    text-decoration:none;
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:2px;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.btn:hover{
+    background:transparent;
+    color:#fff;
+}
+
+.btn.dark{
+    background:#000;
+    border-color:#000;
+    color:#fff;
+}
+
+.btn.dark:hover{
+    background:#333;
+}
+
+/* ================= CATEGORIES ================= */
+
+.categories{
+    max-width:1300px;
+    margin:70px auto;
+    padding:0 20px;
+}
+
+.section-heading{
+    text-align:center;
+    margin-bottom:35px;
+}
+
+.section-heading small{
+    color:#777;
+    letter-spacing:4px;
+    font-size:11px;
+}
+
+.section-heading h2{
+    font-family:'Playfair Display',serif;
+    font-size:42px;
+    margin-top:10px;
+}
+
+.category-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+}
+
+.category{
+    height:260px;
+    position:relative;
+    overflow:hidden;
+    cursor:pointer;
+}
+
+.category img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    transition:.5s;
+}
+
+.category:hover img{
+    transform:scale(1.08);
+}
+
+.category-overlay{
+    position:absolute;
+    inset:0;
+    background:linear-gradient(transparent,rgba(0,0,0,.8));
+    display:flex;
+    align-items:flex-end;
+    padding:25px;
+    color:#fff;
+}
+
+.category-overlay h3{
+    font-family:'Playfair Display',serif;
+    font-size:25px;
+}
+
+/* ================= PRODUCTS ================= */
+
+.products-section{
+    max-width:1400px;
+    margin:90px auto;
+    padding:0 20px;
+}
+
+.filters{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:40px;
+}
+
+.filter{
+    border:1px solid #ddd;
+    background:#fff;
+    padding:10px 20px;
+    cursor:pointer;
+    font-size:11px;
+    letter-spacing:1px;
+    transition:.3s;
+}
+
+.filter.active,
+.filter:hover{
+    background:#000;
+    color:#fff;
+}
+
+.products-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:25px;
+}
+
+.product-card{
+    background:#fff;
+    position:relative;
+    overflow:hidden;
+}
+
+.product-image{
+    height:390px;
+    background:#f1f1f1;
+    position:relative;
+    overflow:hidden;
+}
+
+.product-image img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    transition:.5s;
+}
+
+.product-card:hover .product-image img{
+    transform:scale(1.04);
+}
+
+.product-badge{
+    position:absolute;
+    top:15px;
+    left:15px;
+    background:#000;
+    color:#fff;
+    padding:7px 12px;
+    font-size:9px;
+    letter-spacing:1px;
+}
+
+.product-info{
+    padding:17px 3px;
+}
+
+.product-category{
+    font-size:10px;
+    color:#888;
+    letter-spacing:1px;
+    text-transform:uppercase;
+}
+
+.product-name{
+    font-size:16px;
+    font-weight:600;
+    margin:7px 0;
+}
+
+.product-celebrity{
+    font-size:11px;
+    color:#777;
+    margin-bottom:8px;
+}
+
+.product-price{
+    font-size:15px;
+    font-weight:700;
+}
+
+.product-actions{
+    display:flex;
+    gap:8px;
+    margin-top:14px;
+}
+
+.add-cart{
+    flex:1;
+    padding:11px;
+    border:1px solid #000;
+    background:#000;
+    color:#fff;
+    cursor:pointer;
+    font-size:10px;
+    font-weight:700;
+    letter-spacing:1px;
+}
+
+.add-cart:hover{
+    background:#333;
+}
+
+.buy-now{
+    padding:11px 15px;
+    border:1px solid #ddd;
+    background:#fff;
+    cursor:pointer;
+    font-size:10px;
+}
+
+/* ================= LOADING ================= */
+
+.loading{
+    text-align:center;
+    padding:60px;
+    color:#777;
+}
+
+.error-message{
+    text-align:center;
+    padding:50px;
+    color:#b00000;
+}
+
+/* ================= CELEBRITY ================= */
+
+.celebrity{
+    background:#080808;
+    color:#fff;
+    padding:90px 20px;
+}
+
+.celebrity-inner{
+    max-width:1300px;
+    margin:auto;
+}
+
+.celebrity .section-heading small{
+    color:#999;
+}
+
+.celebrity .section-heading h2{
+    color:#fff;
+}
+
+.celebrity-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:18px;
+}
+
+.celebrity-card{
+    height:350px;
+    position:relative;
+    overflow:hidden;
+}
+
+.celebrity-card img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    transition:.5s;
+}
+
+.celebrity-card:hover img{
+    transform:scale(1.06);
+}
+
+.celebrity-card div{
+    position:absolute;
+    inset:auto 0 0;
+    padding:25px;
+    background:linear-gradient(transparent,rgba(0,0,0,.9));
+}
+
+.celebrity-card h3{
+    font-family:'Playfair Display',serif;
+    font-size:25px;
+}
+
+/* ================= ABOUT ================= */
+
+.about{
+    max-width:1000px;
+    margin:100px auto;
+    padding:0 25px;
+    text-align:center;
+}
+
+.about h2{
+    font-family:'Playfair Display',serif;
+    font-size:45px;
+    margin-bottom:20px;
+}
+
+.about p{
+    color:#666;
+    line-height:2;
+}
+
+/* ================= NEWSLETTER ================= */
+
+.newsletter{
+    background:#f4f4f4;
+    padding:70px 20px;
+    text-align:center;
+}
+
+.newsletter h2{
+    font-family:'Playfair Display',serif;
+    font-size:35px;
+    margin-bottom:10px;
+}
+
+.newsletter p{
+    color:#777;
+    margin-bottom:25px;
+}
+
+.newsletter-form{
+    max-width:500px;
+    margin:auto;
+    display:flex;
+}
+
+.newsletter-form input{
+    flex:1;
+    border:1px solid #ccc;
+    padding:15px;
+    outline:none;
+}
+
+.newsletter-form button{
+    background:#000;
+    color:#fff;
+    border:0;
+    padding:0 25px;
+    cursor:pointer;
+}
+
+/* ================= FOOTER ================= */
+
+footer{
+    background:#000;
+    color:#fff;
+    padding:60px 25px 25px;
+}
+
+.footer-grid{
+    max-width:1200px;
+    margin:auto;
+    display:grid;
+    grid-template-columns:2fr 1fr 1fr 1fr;
+    gap:40px;
+}
+
+.footer-logo{
+    font-family:'Playfair Display',serif;
+    font-size:30px;
+    letter-spacing:3px;
+    margin-bottom:15px;
+}
+
+.footer-column h4{
+    margin-bottom:18px;
+    font-size:12px;
+    letter-spacing:2px;
+}
+
+.footer-column a{
+    display:block;
+    color:#aaa;
+    text-decoration:none;
+    margin-bottom:10px;
+    font-size:12px;
+}
+
+.footer-column a:hover{
+    color:#fff;
+}
+
+.footer-bottom{
+    border-top:1px solid #222;
+    max-width:1200px;
+    margin:50px auto 0;
+    padding-top:20px;
+    text-align:center;
+    color:#777;
+    font-size:11px;
+}
+
+/* ================= CART ================= */
+
+.cart-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.55);
+    z-index:2000;
+    display:none;
+}
+
+.cart-overlay.open{
+    display:block;
+}
+
+.cart-panel{
+    position:absolute;
+    right:0;
+    top:0;
+    height:100%;
+    width:min(430px,100%);
+    background:#fff;
+    padding:25px;
+    overflow-y:auto;
+}
+
+.cart-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding-bottom:20px;
+    border-bottom:1px solid #ddd;
+}
+
+.cart-header h2{
+    font-family:'Playfair Display',serif;
+}
+
+.close-cart{
+    border:0;
+    background:none;
+    font-size:25px;
+    cursor:pointer;
+}
+
+.cart-items{
+    padding:20px 0;
+}
+
+.cart-item{
+    display:flex;
+    gap:12px;
+    padding:15px 0;
+    border-bottom:1px solid #eee;
+}
+
+.cart-item img{
+    width:70px;
+    height:85px;
+    object-fit:cover;
+}
+
+.cart-item-info{
+    flex:1;
+}
+
+.cart-item-info h4{
+    font-size:13px;
+    margin-bottom:6px;
+}
+
+.cart-item-info p{
+    font-size:12px;
+    color:#777;
+}
+
+.remove-item{
+    border:0;
+    background:none;
+    color:#b00000;
+    cursor:pointer;
+    font-size:11px;
+}
+
+.cart-total{
+    border-top:1px solid #ddd;
+    padding-top:20px;
+    display:flex;
+    justify-content:space-between;
+    font-weight:700;
+}
+
+.checkout{
+    width:100%;
+    margin-top:20px;
+    padding:15px;
+    background:#000;
+    color:#fff;
+    border:0;
+    cursor:pointer;
+    letter-spacing:2px;
+    font-weight:700;
+}
+
+.empty-cart{
+    text-align:center;
+    color:#777;
+    padding:50px 0;
+}
+
+/* ================= CHECKOUT MODAL ================= */
+
+.modal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.7);
+    z-index:3000;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+}
+
+.modal.open{
+    display:flex;
+}
+
+.modal-box{
+    background:#fff;
+    width:min(550px,100%);
+    max-height:90vh;
+    overflow-y:auto;
+    padding:30px;
+}
+
+.modal-box h2{
+    font-family:'Playfair Display',serif;
+    margin-bottom:20px;
+}
+
+.form-group{
+    margin-bottom:15px;
+}
+
+.form-group label{
+    display:block;
+    font-size:11px;
+    margin-bottom:6px;
+    font-weight:600;
+}
+
+.form-group input,
+.form-group textarea{
+    width:100%;
+    padding:12px;
+    border:1px solid #ccc;
+    outline:none;
+    font-family:inherit;
+}
+
+.form-group textarea{
+    min-height:90px;
+    resize:vertical;
+}
+
+.form-buttons{
+    display:flex;
+    gap:10px;
+}
+
+.form-buttons button{
+    flex:1;
+    padding:13px;
+    cursor:pointer;
+}
+
+.cancel{
+    background:#eee;
+    border:0;
+}
+
+.place-order{
+    background:#000;
+    color:#fff;
+    border:0;
+}
+
+/* ================= MOBILE ================= */
+
+.mobile-menu{
+    display:none;
+    border:0;
+    background:none;
+    color:#fff;
+    font-size:24px;
+    cursor:pointer;
+}
+
+@media(max-width:1000px){
+
+    .products-grid{
+        grid-template-columns:repeat(3,1fr);
+    }
+
+    .category-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .celebrity-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .footer-grid{
+        grid-template-columns:1fr 1fr;
+    }
+
+}
+
+@media(max-width:700px){
+
+    .navbar{
+        min-height:65px;
+    }
+
+    .nav-links{
+        display:none;
+        position:absolute;
+        left:0;
+        right:0;
+        top:106px;
+        background:#000;
+        flex-direction:column;
+        padding:25px;
+        border-top:1px solid #222;
+    }
+
+    .nav-links.open{
+        display:flex;
+    }
+
+    .mobile-menu{
+        display:block;
+    }
+
+    .logo{
+        font-size:23px;
+    }
+
+    .hero{
+        min-height:570px;
+    }
+
+    .hero h1{
+        font-size:50px;
+    }
+
+    .category-grid,
+    .products-grid,
+    .celebrity-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .product-image{
+        height:260px;
+    }
+
+    .category{
+        height:200px;
+    }
+
+    .celebrity-card{
+        height:260px;
+    }
+
+    .section-heading h2{
+        font-size:35px;
+    }
+
+    .footer-grid{
+        grid-template-columns:1fr;
+    }
+
+    .newsletter-form{
+        flex-direction:column;
+        gap:8px;
+    }
+
+    .newsletter-form button{
+        padding:14px;
+    }
+
+}
+
+@media(max-width:450px){
+
+    .products-grid{
+        gap:12px;
+    }
+
+    .product-image{
+        height:230px;
+    }
+
+    .product-name{
+        font-size:13px;
+    }
+
+    .product-actions{
+        flex-direction:column;
+    }
+
+    .hero h1{
+        font-size:43px;
+    }
+
+}
+
+</style>
 </head>
+
 <body>
 
-    <header>
-        <h1>H&S Clothing</h1>
-        <p>Celebrity Inspired Fashion</p>
-    </header>
+<!-- ================= HEADER ================= -->
 
-    <nav>
-        <a href="#men">Men's Collection</a>
-        <a href="#women">Women's Collection</a>
-        <a href="#about">About Us</a>
-    </nav>
+<header>
 
-    <div class="container">
-        
-        <h2 id="women" class="section-title">Women's Collection</h2>
-        <div class="products">
-            <div class="card">
-                <img src="https://via.placeholder.com/280x250" alt="Women Outfit 1">
-                <h3>Celebrity Style Outfit 1</h3>
-                <p>$49.99</p>
-            </div>
-            <div class="card">
-                <img src="https://via.placeholder.com/280x250" alt="Women Outfit 2">
-                <h3>Celebrity Style Outfit 2</h3>
-                <p>$59.99</p>
-            </div>
+    <div class="top-bar">
+        FREE SHIPPING ON ORDERS ABOVE ₹2,999
+    </div>
+
+    <div class="navbar">
+
+        <div class="logo">
+            H<span>&</span>S
         </div>
 
-        <h2 id="men" class="section-title">Men's Collection</h2>
-        <div class="products">
-            <div class="card">
-                <img src="https://via.placeholder.com/280x250" alt="Men Outfit 1">
-                <h3>Celebrity Style Outfit 1</h3>
-                <p>$69.99</p>
-            </div>
-            <div class="card">
-                <img src="https://via.placeholder.com/280x250" alt="Men Outfit 2">
-                <h3>Celebrity Style Outfit 2</h3>
-                <p>$79.99</p>
-            </div>
+        <button class="mobile-menu" onclick="toggleMenu()">
+            ☰
+        </button>
+
+        <nav class="nav-links" id="navLinks">
+            <a href="#home">HOME</a>
+            <a href="#collections">COLLECTIONS</a>
+            <a href="#products">SHOP</a>
+            <a href="#celebs">CELEBRITY</a>
+            <a href="#about">ABOUT</a>
+        </nav>
+
+        <div class="nav-actions">
+
+            <button class="icon-btn" onclick="openCart()">
+                🛒
+                <span class="cart-count" id="cartCount">0</span>
+            </button>
+
         </div>
 
     </div>
 
-    <footer>
-        <p>&copy; H&S Clothing. All rights reserved.</p>
-    </footer>
+</header>
 
-</body> 
-</html> 
+
+<!-- ================= HERO ================= -->
+
+<section class="hero" id="home">
+
+    <div class="hero-content">
+
+        <small>PREMIUM COLLECTION 2026</small>
+
+        <h1>
+            WEAR YOUR<br>
+            CONFIDENCE
+        </h1>
+
+        <p>
+            Discover premium celebrity-inspired fashion
+            designed for those who want to stand out.
+        </p>
+
+        <div class="hero-buttons">
+
+            <a href="#products" class="btn">
+                SHOP COLLECTION
+            </a>
+
+            <a href="#celebs" class="btn dark">
+                CELEBRITY STYLE
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= CATEGORIES ================= -->
+
+<section class="categories" id="collections">
+
+    <div class="section-heading">
+
+        <small>EXPLORE</small>
+
+        <h2>Shop By Style</h2>
+
+    </div>
+
+    <div class="category-grid">
+
+        <div class="category"
+             onclick="filterProducts('Men')">
+
+            <img
+                src="https://images.unsplash.com/photo-1617127365659-c47fa864d8bc?auto=format&fit=crop&w=900&q=80"
+                alt="Men's fashion"
+            >
+
+            <div class="category-overlay">
+                <h3>Men</h3>
+            </div>
+
+        </div>
+
+
+        <div class="category"
+             onclick="filterProducts('Women')">
+
+            <img
+                src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=900&q=80"
+                alt="Women's fashion"
+            >
+
+            <div class="category-overlay">
+                <h3>Women</h3>
+            </div>
+
+        </div>
+
+
+        <div class="category"
+             onclick="filterProducts('Formal')">
+
+            <img
+                src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=900&q=80"
+                alt="Formal fashion"
+            >
+
+            <div class="category-overlay">
+                <h3>Formal</h3>
+            </div>
+
+        </div>
+
+
+        <div class="category"
+             onclick="filterProducts('Streetwear')">
+
+            <img
+                src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=900&q=80"
+                alt="Streetwear"
+            >
+
+            <div class="category-overlay">
+                <h3>Streetwear</h3>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= PRODUCTS ================= -->
+
+<section class="products-section" id="products">
+
+    <div class="section-heading">
+
+        <small>H&S COLLECTION</small>
+
+        <h2>Latest Arrivals</h2>
+
+    </div>
+
+    <div class="filters">
+
+        <button
+            class="filter active"
+            onclick="filterProducts('All', this)">
+            ALL
+        </button>
+
+        <button
+            class="filter"
+            onclick="filterProducts('Men', this)">
+            MEN
+        </button>
+
+        <button
+            class="filter"
+            onclick="filterProducts('Women', this)">
+            WOMEN
+        </button>
+
+        <button
+            class="filter"
+            onclick="filterProducts('Formal', this)">
+            FORMAL
+        </button>
+
+        <button
+            class="filter"
+            onclick="filterProducts('Streetwear', this)">
+            STREETWEAR
+        </button>
+
+    </div>
+
+    <div id="productsGrid" class="products-grid">
+
+        <div class="loading">
+            Loading H&S Collection...
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= CELEBRITY ================= -->
+
+<section class="celebrity" id="celebs">
+
+    <div class="celebrity-inner">
+
+        <div class="section-heading">
+
+            <small>STYLE ICONS</small>
+
+            <h2>Celebrity Inspired</h2>
+
+        </div>
+
+        <div class="celebrity-grid">
+
+            <div class="celebrity-card">
+
+                <img
+                    src="https://images.unsplash.com/photo-1617137968427-85924c800a22?auto=format&fit=crop&w=900&q=80"
+                    alt="Celebrity inspired men's style"
+                >
+
+                <div>
+                    <h3>Red Carpet</h3>
+                </div>
+
+            </div>
+
+
+            <div class="celebrity-card">
+
+                <img
+                    src="https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=900&q=80"
+                    alt="Luxury fashion"
+                >
+
+                <div>
+                    <h3>Hollywood</h3>
+                </div>
+
+            </div>
+
+
+            <div class="celebrity-card">
+
+                <img
+                    src="https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=900&q=80"
+                    alt="Women's fashion"
+                >
+
+                <div>
+                    <h3>Bollywood</h3>
+                </div>
+
+            </div>
+
+
+            <div class="celebrity-card">
+
+                <img
+                    src="https://images.unsplash.com/photo-1506629905607-d9d4b2e7c0c3?auto=format&fit=crop&w=900&q=80"
+                    alt="Street fashion"
+                >
+
+                <div>
+                    <h3>Street Style</h3>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= ABOUT ================= -->
+
+<section class="about" id="about">
+
+    <div class="section-heading">
+
+        <small>OUR STORY</small>
+
+        <h2>About H&S</h2>
+
+    </div>
+
+    <p>
+        H&S Clothing brings together modern fashion,
+        premium design and celebrity-inspired style.
+        Our collection is created for people who believe
+        clothing is more than what you wear — it is how
+        you express yourself.
+    </p>
+
+</section>
+
+
+<!-- ================= NEWSLETTER ================= -->
+
+<section class="newsletter">
+
+    <h2>Stay In Style</h2>
+
+    <p>
+        Get updates about new collections and exclusive offers.
+    </p>
+
+    <form
+        class="newsletter-form"
+        onsubmit="subscribeNewsletter(event)"
+    >
+
+        <input
+            type="email"
+            id="newsletterEmail"
+            placeholder="Enter your email"
+            required
+        >
+
+        <button type="submit">
+            SUBSCRIBE
+        </button>
+
+    </form>
+
+</section>
+
+
+<!-- ================= FOOTER ================= -->
+
+<footer>
+
+    <div class="footer-grid">
+
+        <div class="footer-column">
+
+            <div class="footer-logo">
+                H&S
+            </div>
+
+            <p style="color:#888;line-height:1.8;font-size:12px;">
+                Premium fashion for the modern generation.
+                Discover your style with H&S Clothing.
+            </p>
+
+        </div>
+
+
+        <div class="footer-column">
+
+            <h4>SHOP</h4>
+
+            <a href="#products">Men</a>
+            <a href="#products">Women</a>
+            <a href="#products">Formal</a>
+            <a href="#products">Streetwear</a>
+
+        </div>
+
+
+        <div class="footer-column">
+
+            <h4>COMPANY</h4>
+
+            <a href="#about">About Us</a>
+            <a href="#celebs">Celebrity</a>
+            <a href="#">Contact</a>
+
+        </div>
+
+
+        <div class="footer-column">
+
+            <h4>HELP</h4>
+
+            <a href="#">Shipping</a>
+            <a href="#">Returns</a>
+            <a href="#">Privacy</a>
+            <a href="#">Terms</a>
+
+        </div>
+
+    </div>
+
+    <div class="footer-bottom">
+
+        © 2026 H&S Clothing. All Rights Reserved.
+
+    </div>
+
+</footer>
+
+
+<!-- ================= CART ================= -->
+
+<div
+    class="cart-overlay"
+    id="cartOverlay"
+    onclick="closeCartOutside(event)"
+>
+
+    <div
+        class="cart-panel"
+        onclick="event.stopPropagation()"
+    >
+
+        <div class="cart-header">
+
+            <h2>Your Cart</h2>
+
+            <button
+                class="close-cart"
+                onclick="closeCart()"
+            >
+                ×
+            </button>
+
+        </div>
+
+        <div
+            class="cart-items"
+            id="cartItems"
+        ></div>
+
+        <div class="cart-total">
+
+            <span>Total</span>
+
+            <span id="cartTotal">
+                ₹0
+            </span>
+
+        </div>
+
+        <button
+            class="checkout"
+            onclick="openCheckout()"
+        >
+            PROCEED TO CHECKOUT
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- ================= CHECKOUT ================= -->
+
+<div
+    class="modal"
+    id="checkoutModal"
+>
+
+    <div class="modal-box">
+
+        <h2>Complete Your Order</h2>
+
+        <form onsubmit="placeOrder(event)">
+
+            <div class="form-group">
+
+                <label>
+                    FULL NAME
+                </label>
+
+                <input
+                    type="text"
+                    id="customerName"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    EMAIL
+                </label>
+
+                <input
+                    type="email"
+                    id="customerEmail"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    PHONE
+                </label>
+
+                <input
+                    type="tel"
+                    id="customerPhone"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    DELIVERY ADDRESS
+                </label>
+
+                <textarea
+                    id="customerAddress"
+                    required
+                ></textarea>
+
+            </div>
+
+
+            <div class="form-buttons">
+
+                <button
+                    type="button"
+                    class="cancel"
+                    onclick="closeCheckout()"
+                >
+                    CANCEL
+                </button>
+
+                <button
+                    type="submit"
+                    class="place-order"
+                >
+                    PLACE ORDER
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* ============================================================
+   CONFIG
+============================================================ */
+
+const API_BASE = window.location.origin;
+
+
+/* ============================================================
+   GLOBAL VARIABLES
+============================================================ */
+
+let allProducts = [];
+
+let cart = JSON.parse(
+    localStorage.getItem("hs_cart") || "[]"
+);
+
+
+/* ============================================================
+   LOAD PRODUCTS
+============================================================ */
+
+async function loadProducts(){
+
+    const grid = document.getElementById(
+        "productsGrid"
+    );
+
+    grid.innerHTML = `
+        <div class="loading">
+            Loading H&S Collection...
+        </div>
+    `;
+
+    try{
+
+        const response = await fetch(
+            API_BASE + "/api/products"
+        );
+
+        if(!response.ok){
+            throw new Error(
+                "Server returned " + response.status
+            );
+        }
+
+        const data = await response.json();
+
+        if(!data.success){
+            throw new Error(
+                data.message || "Could not load products"
+            );
+        }
+
+        allProducts = data.products || [];
+
+        displayProducts(allProducts);
+
+    }catch(error){
+
+        console.error(
+            "Product loading error:",
+            error
+        );
+
+        grid.innerHTML = `
+            <div class="error-message">
+                <h3>Unable to load products</h3>
+                <p>Please refresh the page and try again.</p>
+            </div>
+        `;
+    }
+}
+
+
+/* ============================================================
+   DISPLAY PRODUCTS
+============================================================ */
+
+function displayProducts(products){
+
+    const grid = document.getElementById(
+        "productsGrid"
+    );
+
+    if(!products.length){
+
+        grid.innerHTML = `
+            <div class="loading">
+                No products available in this category.
+            </div>
+        `;
+
+        return;
+    }
+
+    grid.innerHTML = products.map(product => {
+
+        const image = product.image &&
+                      product.image.trim()
+            ? product.image
+            : "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=900&q=80";
+
+        const price = Number(
+            product.price || 0
+        ).toLocaleString(
+            "en-IN",
+            {
+                maximumFractionDigits:2
+            }
+        );
+
+        const stock = Number(
+            product.stock || 0
+        );
+
+        return `
+
+            <div class="product-card">
+
+                <div class="product-image">
+
+                    ${
+                        stock <= 0
+                        ?
+                        `<div class="product-badge">
+                            OUT OF STOCK
+                        </div>`
+                        :
+                        `<div class="product-badge">
+                            PREMIUM
+                        </div>`
+                    }
+
+                    <img
+                        src="${escapeHtml(image)}"
+                        alt="${escapeHtml(product.name)}"
+                        loading="lazy"
+                        onerror="this.src='https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=900&q=80'"
+                    >
+
+                </div>
+
+
+                <div class="product-info">
+
+                    <div class="product-category">
+                        ${escapeHtml(product.category || "Fashion")}
+                    </div>
+
+                    <div class="product-name">
+                        ${escapeHtml(product.name)}
+                    </div>
+
+                    ${
+                        product.celebrity
+                        ?
+                        `<div class="product-celebrity">
+                            Inspired by ${escapeHtml(product.celebrity)}
+                        </div>`
+                        :
+                        ""
+                    }
+
+                    <div class="product-price">
+                        ₹${price}
+                    </div>
+
+
+                    <div class="product-actions">
+
+                        <button
+                            class="add-cart"
+                            ${
+                                stock <= 0
+                                ? "disabled"
+                                : ""
+                            }
+                            onclick='addToCart(${JSON.stringify(product)})'
+                        >
+                            ${
+                                stock <= 0
+                                ? "OUT OF STOCK"
+                                : "ADD TO CART"
+                            }
+                        </button>
+
+                        <button
+                            class="buy-now"
+                            ${
+                                stock <= 0
+                                ? "disabled"
+                                : ""
+                            }
+                            onclick='buyNow(${JSON.stringify(product)})'
+                        >
+                            BUY
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+        `;
+
+    }).join("");
+}
+
+
+/* ============================================================
+   FILTER PRODUCTS
+============================================================ */
+
+function filterProducts(
+    category,
+    clickedButton
+){
+
+    if(clickedButton){
+
+        document
+            .querySelectorAll(".filter")
+            .forEach(button => {
+                button.classList.remove("active");
+            });
+
+        clickedButton.classList.add("active");
+    }
+
+    let filtered;
+
+    if(
+        category === "All" ||
+        !category
+    ){
+
+        filtered = allProducts;
+
+    }else{
+
+        filtered = allProducts.filter(
+            product =>
+                String(product.category || "")
+                .toLowerCase()
+                === category.toLowerCase()
+        );
+
+    }
+
+    displayProducts(filtered);
+
+    document
+        .getElementById("products")
+        .scrollIntoView({
+            behavior:"smooth"
+        });
+}
+
+
+/* ============================================================
+   CART
+============================================================ */
+
+function addToCart(product){
+
+    const existing = cart.find(
+        item => item.id === product.id
+    );
+
+    if(existing){
+
+        existing.quantity += 1;
+
+    }else{
+
+        cart.push({
+            id:product.id,
+            name:product.name,
+            price:Number(product.price || 0),
+            image:product.image,
+            quantity:1
+        });
+
+    }
+
+    saveCart();
+
+    updateCartUI();
+
+    alert(
+        product.name +
+        " added to your cart."
+    );
+}
+
+
+function buyNow(product){
+
+    addToCart(product);
+
+    openCart();
+}
+
+
+function removeFromCart(id){
+
+    cart = cart.filter(
+        item => item.id !== id
+    );
+
+    saveCart();
+
+    updateCartUI();
+}
+
+
+function saveCart(){
+
+    localStorage.setItem(
+        "hs_cart",
+        JSON.stringify(cart)
+    );
+
+}
+
+
+function updateCartUI(){
+
+    const countElement =
+        document.getElementById("cartCount");
+
+    const itemsElement =
+        document.getElementById("cartItems");
+
+    const totalElement =
+        document.getElementById("cartTotal");
+
+
+    const count = cart.reduce(
+        (total,item) =>
+            total + item.quantity,
+        0
+    );
+
+
+    const total = cart.reduce(
+        (sum,item) =>
+            sum +
+            (
+                Number(item.price) *
+                Number(item.quantity)
+            ),
+        0
+    );
+
+
+    countElement.textContent =
+        count;
+
+
+    totalElement.textContent =
+        "₹" +
+        total.toLocaleString(
+            "en-IN",
+            {
+                maximumFractionDigits:2
+            }
+        );
+
+
+    if(!cart.length){
+
+        itemsElement.innerHTML = `
+            <div class="empty-cart">
+                Your cart is empty.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    itemsElement.innerHTML =
+        cart.map(item => {
+
+            const image =
+                item.image &&
+                item.image.trim()
+                ?
+                item.image
+                :
+                "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=300&q=80";
+
+
+            return `
+
+                <div class="cart-item">
+
+                    <img
+                        src="${escapeHtml(image)}"
+                        alt="${escapeHtml(item.name)}"
+                        onerror="this.src='https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=300&q=80'"
+                    >
+
+                    <div class="cart-item-info">
+
+                        <h4>
+                            ${escapeHtml(item.name)}
+                        </h4>
+
+                        <p>
+                            ₹${Number(item.price).toLocaleString("en-IN")}
+                            × ${item.quantity}
+                        </p>
+
+                    </div>
+
+                    <button
+                        class="remove-item"
+                        onclick="removeFromCart(${item.id})"
+                    >
+                        REMOVE
+                    </button>
+
+                </div>
+
+            `;
+
+        }).join("");
+}
+
+
+/* ============================================================
+   CART OPEN/CLOSE
+============================================================ */
+
+function openCart(){
+
+    document
+        .getElementById("cartOverlay")
+        .classList.add("open");
+
+    updateCartUI();
+
+}
+
+
+function closeCart(){
+
+    document
+        .getElementById("cartOverlay")
+        .classList.remove("open");
+
+}
+
+
+function closeCartOutside(event){
+
+    if(
+        event.target.id ===
+        "cartOverlay"
+    ){
+
+        closeCart();
+
+    }
+
+}
+
+
+/* ============================================================
+   CHECKOUT
+============================================================ */
+
+function openCheckout(){
+
+    if(!cart.length){
+
+        alert(
+            "Your cart is empty."
+        );
+
+        return;
+    }
+
+    closeCart();
+
+    document
+        .getElementById("checkoutModal")
+        .classList.add("open");
+
+}
+
+
+function closeCheckout(){
+
+    document
+        .getElementById("checkoutModal")
+        .classList.remove("open");
+
+}
+
+
+async function placeOrder(event){
+
+    event.preventDefault();
+
+
+    if(!cart.length){
+
+        alert(
+            "Your cart is empty."
+        );
+
+        return;
+    }
+
+
+    const customerName =
+        document
+            .getElementById("customerName")
+            .value
+            .trim();
+
+
+    const email =
+        document
+            .getElementById("customerEmail")
+            .value
+            .trim();
+
+
+    const phone =
+        document
+            .getElementById("customerPhone")
+            .value
+            .trim();
+
+
+    const address =
+        document
+            .getElementById("customerAddress")
+            .value
+            .trim();
+
+
+    const total =
+        cart.reduce(
+            (sum,item) =>
+                sum +
+                Number(item.price) *
+                Number(item.quantity),
+            0
+        );
+
+
+    const orderData = {
+
+        customer_name:
+            customerName,
+
+        email:
+            email,
+
+        phone:
+            phone,
+
+        address:
+            address,
+
+        items:
+            cart,
+
+        total:
+            total
+
+    };
+
+
+    try{
+
+        const response =
+            await fetch(
+                API_BASE + "/api/orders",
+                {
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify(
+                            orderData
+                        )
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if(!response.ok ||
+           !data.success){
+
+            throw new Error(
+                data.message ||
+                "Order could not be placed"
+            );
+
+        }
+
+
+        alert(
+            "Order placed successfully! Order #" +
+            data.order_id
+        );
+
+
+        cart = [];
+
+        saveCart();
+
+        updateCartUI();
+
+        closeCheckout();
+
+        document
+            .querySelector(
+                "#checkoutModal form"
+            )
+            .reset();
+
+
+    }catch(error){
+
+        console.error(
+            error
+        );
+
+        alert(
+            "Unable to place your order. Please try again."
+        );
+
+    }
+
+}
+
+
+/* ============================================================
+   MOBILE MENU
+============================================================ */
+
+function toggleMenu(){
+
+    document
+        .getElementById("navLinks")
+        .classList.toggle("open");
+
+}
+
+
+/* ============================================================
+   NEWSLETTER
+============================================================ */
+
+function subscribeNewsletter(event){
+
+    event.preventDefault();
+
+    const email =
+        document
+            .getElementById(
+                "newsletterEmail"
+            )
+            .value;
+
+    alert(
+        "Thank you! " +
+        email +
+        " has been subscribed."
+    );
+
+    event.target.reset();
+
+}
+
+
+/* ============================================================
+   HTML ESCAPE
+============================================================ */
+
+function escapeHtml(value){
+
+    if(value === null ||
+       value === undefined){
+
+        return "";
+
+    }
+
+    return String(value)
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+
+/* ============================================================
+   START
+============================================================ */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        loadProducts();
+
+        updateCartUI();
+
+    }
+);
+
+</script>
+
+</body>
+    </html>
